@@ -2,7 +2,7 @@
 
 
 #SQL QUERY
-
+´´´
 CREATE DATABASE BBDDVerificable
 USE BBDDVerificable
 GO
@@ -54,3 +54,4 @@ CREATE TABLE multipropietarios (
 
 );
 GO
+´´´
