@@ -1,0 +1,66 @@
+﻿@model IEnumerable<verificable.Models.Multipropietario>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+
+@using (Html.BeginForm("Index", "Multipropietarios", FormMethod.Post))
+{
+    <div class="form-group">
+        <label for="searchInput">Comuna:</label>
+        <input type="text" name="comunaInput" id="comunaInput" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label for="searchInput">manzana:</label>
+        <input type="text" name="manzanaInput" id="manzanaInput" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label for="searchInput">predio:</label>
+        <input type="text" name="predioInput" id="predioInput" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label for="searchInput">año:</label>
+        <input type="text" name="añoInput" id="añoInput" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary">Buscar</button>
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Comuna</th>
+            <th>Manzana</th>
+            <th>Predio</th>
+            <th>RUN/RUT</th>
+            <th>Porcentaje de derecho</th>
+            <th>Fojas</th>
+            <th>Fecha de inscripción</th>
+            <th>Número de inscripción</th>
+            <th>Vigencia inicial</th>
+            <th>Vigencia final</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var multipropietario in Model)
+        {
+            <tr>
+                <td>@multipropietario.Comuna</td>
+                <td>@multipropietario.Manzana</td>
+                <td>@multipropietario.Predio</td>
+                <td>@multipropietario.RunRut</td>
+                <td>@multipropietario.PorcentajeDerecho</td>
+                <td>@multipropietario.Fojas</td>
+                <td>@multipropietario.FechaInscripcion</td>
+                <td>@multipropietario.NumInscripcion</td>
+                <td>@multipropietario.VigenciaInicial</td>
+                <td>@multipropietario.VigenciaFinal</td>
+            </tr>
+        }
+    </tbody>
+</table>
+

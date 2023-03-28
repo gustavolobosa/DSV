@@ -1,0 +1,74 @@
+﻿@model verificable.Models.Formulario
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Formulario</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+
+        <form asp-action="Create" method="post">
+
+            <label for="cne">CNE:</label>
+            <input type="text" id="cne" name="cne"><br>
+
+            <label for="comuna">Comuna:</label>
+            <input type="text" id="comuna" name="comuna"><br>
+
+            <label for="manzana">Manzana:</label>
+            <input type="text" id="manzana" name="manzana"><br>
+
+            <label for="predio">Predio:</label>
+            <input type="text" id="predio" name="predio"><br>
+
+            <label for="fojas">Fojas:</label>
+            <input type="number" id="fojas" name="fojas"><br>
+
+            <label for="fecha_inscripcion">Fecha de Inscripción:</label>
+            <input type="date" id="fecha_inscripcion" name="fecha_inscripcion"><br>
+
+            <label for="num_inscripcion">Número de Inscripción:</label>
+            <input type="number" id="num_inscripcion" name="num_inscripcion"><br>
+
+            <h4>Enajenantes:</h4><br><br>
+
+            <label for="run_rut">Run/Rut:</label>
+            <input type="text" id="run_rut" name="run_rut"><br><br>
+
+            <label for="porcentaje_derecho">Porcentaje de derecho:</label>
+            <input type="number" step="0.01" id="porcentaje_derecho" name="porcentaje_derecho"><br><br>
+
+            <label for="no_acreditado">No acreditado:</label>
+            <input type="number" step="0.01" id="no_acreditado" name="no_acreditado"><br><br>
+
+            <h4>Adquirientes:</h4><br><br>
+
+            <label for="run_rut">Run/Rut:</label>
+            <input type="text" id="adq_run_rut" name="adq_run_rut"><br><br>
+
+            <label for="porcentaje_derecho">Porcentaje de derecho:</label>
+            <input type="number" step="0.01" id="adq_porcentaje_derecho" name="adq_porcentaje_derecho"><br><br>
+
+            <label for="no_acreditado">No acreditado:</label>
+            <input type="number" step="0.01" id="adq_no_acreditado" name="adq_no_acreditado"><br><br>
+
+
+            <input type="submit" value="Enviar">
+        </form>
+
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
