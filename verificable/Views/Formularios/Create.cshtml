@@ -14,7 +14,10 @@
         <form asp-action="Create" method="post">
 
             <label for="cne">CNE:</label>
-            <input type="text" id="cne" name="cne"><br>
+            <select name="Cne" class="form-control">
+                <option asp-for="Cne" value="Compraventa">Compraventa</option>
+                <option asp-for="Cne" value="Regualrizacion De Patrimonio">Regularizacion de Patrimonio</option>
+            </select>
 
             <label for="comuna">Comuna:</label>
             <input type="text" id="comuna" name="comuna"><br>
