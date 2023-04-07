@@ -36,25 +36,65 @@
 
             <h4>Enajenantes:</h4><br><br>
 
-            <label for="run_rut">Run/Rut:</label>
-            <input type="text" id="run_rut" name="run_rut"><br><br>
+            <table id="enajenantes">
+                <thead>
+                    <tr>
+                        <th>Run/Rut</th>
+                        <th>Porcentaje de derecho</th>
+                        <th>No acreditado</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <input type="text" name="enajenantes[0].run_rut" />
+                        </td>
+                        <td>
+                            <input type="number" step="0.01" name="enajenantes[0].porcentaje_derecho" />
+                        </td>
+                        <td>
+                            <input type="number" step="0.01" name="enajenantes[0].no_acreditado" />
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-danger" onclick="removeEnajenantes(this)">Remove</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
 
-            <label for="porcentaje_derecho">Porcentaje de derecho:</label>
-            <input type="number" step="0.01" id="porcentaje_derecho" name="porcentaje_derecho"><br><br>
-
-            <label for="no_acreditado">No acreditado:</label>
-            <input type="number" step="0.01" id="no_acreditado" name="no_acreditado"><br><br>
+            <button type="button" class="btn btn-primary" onclick="addEnajenantes()">Add Enajenantes</button><br><br>
 
             <h4>Adquirientes:</h4><br><br>
 
-            <label for="run_rut">Run/Rut:</label>
-            <input type="text" id="adq_run_rut" name="adq_run_rut"><br><br>
+            <table id="adquirientes">
+                <thead>
+                    <tr>
+                        <th>Run/Rut</th>
+                        <th>Porcentaje de derecho</th>
+                        <th>No acreditado</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <input type="text" name="adquirentes[0].run_rut" />
+                        </td>
+                        <td>
+                            <input type="number" step="0.01" name="adquirentes[0].porcentaje_derecho" />
+                        </td>
+                        <td>
+                            <input type="number" step="0.01" name="adquirentes[0].no_acreditado" />
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-danger" onclick="removeAdquirente(this)">Remove</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
 
-            <label for="porcentaje_derecho">Porcentaje de derecho:</label>
-            <input type="number" step="0.01" id="adq_porcentaje_derecho" name="adq_porcentaje_derecho"><br><br>
-
-            <label for="no_acreditado">No acreditado:</label>
-            <input type="number" step="0.01" id="adq_no_acreditado" name="adq_no_acreditado"><br><br>
+            <button type="button" class="btn btn-primary" onclick="addAdquirente()">Add Adquirente</button><br><br>
 
 
             <input type="submit" value="Enviar">
@@ -71,4 +111,63 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <script>
+
+        //Para  enajenantes
+
+        var enajenantesCount = 1;
+
+        function addEnajenantes() {
+            var enajenantesTable = document.getElementById("enajenantes").getElementsByTagName('tbody')[0];
+            var newRow = enajenantesTable.insertRow(-1);
+
+            var runRutCell = newRow.insertCell(0);
+            runRutCell.innerHTML = '<input type="text" name="enajenantes[' + enajenantesCount + '].run_rut" />';
+
+            var porcentajeCell = newRow.insertCell(1);
+            porcentajeCell.innerHTML = '<input type="number" step="0.01" name="enajenantes[' + enajenantesCount + '].porcentaje_derecho" />';
+
+            var noAcreditadoCell = newRow.insertCell(2);
+            noAcreditadoCell.innerHTML = '<input type="number" step="0.01" name="enajenantes[' + enajenantesCount + '].no_acreditado" />';
+
+            var removeCell = newRow.insertCell(3);
+            removeCell.innerHTML = '<button type="button" class="btn btn-danger" onclick="removeEnajenantes(this)">Remove</button>';
+
+            enajenantesCount++;
+        }
+
+        function removeEnajenantes(button) {
+            var row = button.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+        }
+
+        //Para adquirientes
+
+        var adqCount = 1;
+
+        function addAdquirente() {
+            var adqTable = document.getElementById("adquirientes").getElementsByTagName('tbody')[0];
+            newRow = adqTable.insertRow(-1);
+
+            runRutCell = newRow.insertCell(0);
+            runRutCell.innerHTML = '<input type="text" name="adquirentes[' + adqCount + '].run_rut" />';
+
+            porcentajeCell = newRow.insertCell(1);
+            porcentajeCell.innerHTML = '<input type="number" step="0.01" name="adquirentes[' + adqCount + '].porcentaje_derecho" />';
+
+            noAcreditadoCell = newRow.insertCell(2);
+            noAcreditadoCell.innerHTML = '<input type="number" step="0.01" name="adquirentes[' + adqCount + '].no_acreditado" />';
+
+            removeCell = newRow.insertCell(3);
+            removeCell.innerHTML = '<button type="button" class="btn btn-danger" onclick="removeAdquirente(this)">Remove</button>';
+
+            adqCount++;
+        }
+
+        function removeAdquirente(button) {
+            row = button.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+        }
+    </script>
 }

@@ -64,37 +64,43 @@ namespace verificable.Controllers
                 _context.Add(formulario);
                 await _context.SaveChangesAsync();
 
-                var runRut = Request.Form["run_rut"];
-                var porcentajeDerecho = Request.Form["porcentaje_derecho"];
-                var noAcreditado = Request.Form["no_acreditado"];
-
-                // Crea un nuevo objeto Enajenantes
-                var nuevoEnajenante = new Enajenante
+                int numEnajenantes = 0;
+                foreach (string key in Request.Form.Keys)
                 {
-                    NumAtencion = formulario.NumAtencion,
-                    RunRut = runRut,
-                    PorcentajeDerecho = float.Parse(porcentajeDerecho),
-                    NoAcreditado = float.Parse(noAcreditado),
-                };
+                    if (key.StartsWith("enajenantes") && key.EndsWith("run_rut"))
+                    {
+                        numEnajenantes++;
+                    }
+                }
 
-                // Agrega el enajenante a la base de datos
-                _context.Add(nuevoEnajenante);
-
-                var adqRunRut = Request.Form["adq__run_rut"];
-                var adqPorcentajeDerecho = Request.Form["adq_porcentaje_derecho"];
-                var adqNoAcreditado = Request.Form["adq_no_acreditado"];
-
-                // Crea un nuevo objeto Enajenantes
-                var nuevoAdquiriente = new Adquirente
+                int numAdquirentes = 0;
+                foreach (string key in Request.Form.Keys)
                 {
-                    NumAtencion = formulario.NumAtencion,
-                    RunRut = adqRunRut,
-                    PorcentajeDerecho = float.Parse(adqPorcentajeDerecho),
-                    NoAcreditado = float.Parse(adqNoAcreditado),
-                };
+                    if (key.StartsWith("adquirentes") && key.EndsWith("run_rut"))
+                    {
+                        numAdquirentes++;
+                    }
+                }
 
-                // Agrega el enajenante a la base de datos
-                _context.Add(nuevoAdquiriente);
+                //Console.WriteLine("num of enajenante: " + numEnajenantes);
+                //Console.WriteLine("num of adquriente: " + numAdquirentes);
+
+                for (int i = 0; i < numEnajenantes; i++)
+                {
+                    string runRut = Request.Form["enajenantes[" + i + "].run_rut"];
+                    decimal porcentajeDerecho = decimal.Parse(Request.Form["enajenantes[" + i + "].porcentaje_derecho"]);
+                    decimal noAcreditado = decimal.Parse(Request.Form["enajenantes[" + i + "].no_acreditado"]);
+                    _context.Add(new Enajenante { RunRut = runRut, PorcentajeDerecho = (double?)porcentajeDerecho, NoAcreditado = (double?)noAcreditado });
+                }
+
+                for (int i = 0; i < numAdquirentes; i++)
+                {
+                    string runRut = Request.Form["adquirentes[" + i + "].run_rut"];
+                    decimal porcentajeDerecho = decimal.Parse(Request.Form["adquirentes[" + i + "].porcentaje_derecho"]);
+                    decimal noAcreditado = decimal.Parse(Request.Form["adquirentes[" + i + "].no_acreditado"]);
+                    _context.Add(new Adquirente { RunRut = runRut, PorcentajeDerecho = (double?)porcentajeDerecho, NoAcreditado = (double?)noAcreditado });
+                }
+
 
                 // Guarda los cambios en la base de datos
                 await _context.SaveChangesAsync();
