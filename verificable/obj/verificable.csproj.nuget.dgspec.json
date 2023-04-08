@@ -1,31 +1,26 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\gusta\\source\\repos\\verificable\\verificable\\verificable.csproj": {}
+    "C:\\Users\\Milcao\\Desktop\\Verificables2\\DSV\\verificable\\verificable.csproj": {}
   },
   "projects": {
-    "C:\\Users\\gusta\\source\\repos\\verificable\\verificable\\verificable.csproj": {
+    "C:\\Users\\Milcao\\Desktop\\Verificables2\\DSV\\verificable\\verificable.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\gusta\\source\\repos\\verificable\\verificable\\verificable.csproj",
+        "projectUniqueName": "C:\\Users\\Milcao\\Desktop\\Verificables2\\DSV\\verificable\\verificable.csproj",
         "projectName": "verificable",
-        "projectPath": "C:\\Users\\gusta\\source\\repos\\verificable\\verificable\\verificable.csproj",
-        "packagesPath": "C:\\Users\\gusta\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\gusta\\source\\repos\\verificable\\verificable\\obj\\",
+        "projectPath": "C:\\Users\\Milcao\\Desktop\\Verificables2\\DSV\\verificable\\verificable.csproj",
+        "packagesPath": "C:\\Users\\Milcao\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Milcao\\Desktop\\Verificables2\\DSV\\verificable\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\gusta\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Users\\Milcao\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net6.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {

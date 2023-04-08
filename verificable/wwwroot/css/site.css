@@ -16,3 +16,12 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.border{
+    margin-bottom: 20px;
+}
+.box-title {
+    margin-bottom: 10px;
+    background-color: #00008B;
+    color: ghostwhite;
+}

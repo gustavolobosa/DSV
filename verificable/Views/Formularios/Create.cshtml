@@ -9,96 +9,114 @@
 <h4>Formulario</h4>
 <hr />
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-12">
 
         <form asp-action="Create" method="post">
+            <div class="border">
+                <h4 class="box-title">Informacion de la Escritura</h4>
+                <label for="cne">CNE:</label>
+                <select name="Cne" class="form-control">
+                    <option asp-for="Cne" value="Compraventa">Compraventa</option>
+                    <option asp-for="Cne" value="Regualrizacion De Patrimonio">Regularizacion de Patrimonio</option>
+                </select>
+            </div>
 
-            <label for="cne">CNE:</label>
-            <select name="Cne" class="form-control">
-                <option asp-for="Cne" value="Compraventa">Compraventa</option>
-                <option asp-for="Cne" value="Regualrizacion De Patrimonio">Regularizacion de Patrimonio</option>
-            </select>
+            <div class="border">
+                <h4 class="box-title">Informacion de la Propiedad Enajenada</h4>
+                <span class="col">
+                    <label for="comuna">Comuna:</label>
+                    <input type="text" id="comuna" name="comuna">
+                </span>
+                <span class="col">
+                    <label for="manzana">Manzana:</label>
+                    <input type="text" id="manzana" name="manzana">
+                </span>
+                <span class="col">
+                    <label for="predio">Predio:</label>
+                    <input type="text" id="predio" name="predio">
+                </span>
+             </div>
 
-            <label for="comuna">Comuna:</label>
-            <input type="text" id="comuna" name="comuna"><br>
+           <div class="border">
+                <h4 class="box-title">Informacion de los Enajenantes:</h4>
+                <table id="enajenantes">
+                    <thead>
+                        <tr>
+                            <th>Run/Rut</th>
+                            <th>Porcentaje de derecho</th>
+                            <th>No acreditado</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <input placeholder="-" type="text" name="enajenantes[0].run_rut" />
+                            </td>
+                            <td>
+                                <input placeholder=0  type="number" step="0.01" name="enajenantes[0].porcentaje_derecho" />
+                            </td>
+                            <td>
+                                <input placeholder=0 type="number" step="0.01" name="enajenantes[0].no_acreditado" />
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-danger" onclick="removeEnajenantes(this)">Remove</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
 
-            <label for="manzana">Manzana:</label>
-            <input type="text" id="manzana" name="manzana"><br>
+                <button type="button" class="btn btn-primary" onclick="addEnajenantes()">Add Enajenantes</button><br><br>
+            </div>
 
-            <label for="predio">Predio:</label>
-            <input type="text" id="predio" name="predio"><br>
+            <div class="border">
+                <h4 class="box-title">Informacion de los Adquirientes:</h4>
+                <table id="adquirientes">
+                    <thead>
+                        <tr>
+                            <th>Run/Rut</th>
+                            <th>Porcentaje de derecho</th>
+                            <th>No acreditado</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <input placeholder="-" type="text" name="adquirentes[0].run_rut" />
+                            </td>
+                            <td>
+                                <input placeholder=0 type="number" step="0.01" name="adquirentes[0].porcentaje_derecho" />
+                            </td>
+                            <td>
+                                <input placeholder=0 type="number" step="0.01" name="adquirentes[0].no_acreditado" />
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-danger" onclick="removeAdquirente(this)">Remove</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
 
-            <label for="fojas">Fojas:</label>
-            <input type="number" id="fojas" name="fojas"><br>
+                <button type="button" class="btn btn-primary" onclick="addAdquirente()">Add Adquirente</button><br><br>
+            </div>
 
-            <label for="fecha_inscripcion">Fecha de Inscripción:</label>
-            <input type="date" id="fecha_inscripcion" name="fecha_inscripcion"><br>
+            <div class="border">
+                <h4 class="box-title">Inscripcion</h4>
 
-            <label for="num_inscripcion">Número de Inscripción:</label>
-            <input type="number" id="num_inscripcion" name="num_inscripcion"><br>
-
-            <h4>Enajenantes:</h4><br><br>
-
-            <table id="enajenantes">
-                <thead>
-                    <tr>
-                        <th>Run/Rut</th>
-                        <th>Porcentaje de derecho</th>
-                        <th>No acreditado</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>
-                            <input type="text" name="enajenantes[0].run_rut" />
-                        </td>
-                        <td>
-                            <input type="number" step="0.01" name="enajenantes[0].porcentaje_derecho" />
-                        </td>
-                        <td>
-                            <input type="number" step="0.01" name="enajenantes[0].no_acreditado" />
-                        </td>
-                        <td>
-                            <button type="button" class="btn btn-danger" onclick="removeEnajenantes(this)">Remove</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <button type="button" class="btn btn-primary" onclick="addEnajenantes()">Add Enajenantes</button><br><br>
-
-            <h4>Adquirientes:</h4><br><br>
-
-            <table id="adquirientes">
-                <thead>
-                    <tr>
-                        <th>Run/Rut</th>
-                        <th>Porcentaje de derecho</th>
-                        <th>No acreditado</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>
-                            <input type="text" name="adquirentes[0].run_rut" />
-                        </td>
-                        <td>
-                            <input type="number" step="0.01" name="adquirentes[0].porcentaje_derecho" />
-                        </td>
-                        <td>
-                            <input type="number" step="0.01" name="adquirentes[0].no_acreditado" />
-                        </td>
-                        <td>
-                            <button type="button" class="btn btn-danger" onclick="removeAdquirente(this)">Remove</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <button type="button" class="btn btn-primary" onclick="addAdquirente()">Add Adquirente</button><br><br>
-
+                <span class="col">
+                    <label for="fojas">Fojas:</label>
+                    <input type="number" id="fojas" name="fojas">
+                </span>
+                <span class="col">
+                    <label for="fecha_inscripcion">Fecha de Inscripción:</label>
+                    <input type="date" id="fecha_inscripcion" name="fecha_inscripcion">
+                </span>
+                <span class="col">
+                    <label for="num_inscripcion">Número de Inscripción:</label>
+                    <input type="number" id="num_inscripcion" name="num_inscripcion">
+                </span>
+            </div>
 
             <input type="submit" value="Enviar">
         </form>
