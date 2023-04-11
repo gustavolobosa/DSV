@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -40,7 +41,6 @@ namespace verificable.Controllers
             {
                 return NotFound();
             }
-
             return View(formulario);
         }
 
@@ -59,6 +59,7 @@ namespace verificable.Controllers
 
         public async Task<IActionResult> Create([Bind("NumAtencion,Cne,Comuna,Manzana,Predio,Fojas,FechaInscripcion,NumInscripcion")] Formulario formulario)
         {
+            //formulario.FechaInscripcion = DateTime.ParseExact(Request.Form["fecha_inscripcion"], "yyyy-MM-dd", CultureInfo.InvariantCulture);
             if (ModelState.IsValid)
             {
                 _context.Add(formulario);
