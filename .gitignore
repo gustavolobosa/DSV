@@ -1,0 +1,43 @@
+# Build and output folders
+bin/
+obj/
+
+# User-specific files
+*.user
+
+# Other files
+*.log
+*.bak
+*.cache
+*.tmp
+
+# Visual Studio files
+.vs/
+*.suo
+*.csproj.user
+*.pdb
+*.userprefs
+*.vscode/
+*.vsconfig
+
+# NuGet
+packages/
+*.nupkg
+*.psmdcp
+
+# Test results
+TestResults/
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+
+# Resharper
+_ReSharper*/
+*.ReSharper*
+*.resharper
+*.DotSettings
+
+# Rider
+.idea*/
+*.sln.iml
+*.iml
+*.sln.DotSettings.user
