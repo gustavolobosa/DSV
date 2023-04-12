@@ -15,9 +15,9 @@
             <div class="border">
                 <h4 class="box-title">Informacion de la Escritura</h4>
                 <label for="cne">CNE:</label>
-                <select name="Cne" class="form-control">
+                <select name="Cne" class="form-control" onchange="showHideDiv()">
                     <option asp-for="Cne" value="Compraventa">Compraventa</option>
-                    <option asp-for="Cne" value="Regualrizacion De Patrimonio">Regularizacion de Patrimonio</option>
+                    <option asp-for="Cne" value="Regularizacion De Patrimonio">Regularizacion de Patrimonio</option>
                 </select>
             </div>
 
@@ -37,8 +37,9 @@
                 </span>
              </div>
 
-           <div class="border">
-                <h4 class="box-title">Informacion de los Enajenantes:</h4>
+            
+                <div class="border" id="enajenantes">
+                    <h4 class="box-title" id="enajenantes">Informacion de los Enajenantes:</h4>
                 <table id="enajenantes">
                     <thead>
                         <tr>
@@ -66,9 +67,9 @@
                     </tbody>
                 </table>
 
-                <button type="button" class="btn btn-primary" onclick="addEnajenantes()">Add Enajenantes</button><br><br>
+                <button type="button" class="btn btn-primary" onclick="addEnajenantes()" id="enajenantes">Add Enajenantes</button><br><br>
             </div>
-
+            
             <div class="border">
                 <h4 class="box-title">Informacion de los Adquirientes:</h4>
                 <table id="adquirientes">
@@ -189,6 +190,20 @@
         function removeAdquirente(button) {
             row = button.parentNode.parentNode;
             row.parentNode.removeChild(row);
+        }
+
+        function showHideDiv() {
+            var cneElement = document.getElementsByName("Cne")[0];
+            var enajenantesElement = document.getElementById("enajenantes");
+
+            console.log(cneElement.value);
+
+            if (cneElement.value === "Regularizacion De Patrimonio") {
+                enajenantesElement.style.display = "none";
+            } else if (cneElement.value === "Compraventa") {
+                enajenantesElement.style.display = "block";
+            }
+
         }
     </script>
 }
