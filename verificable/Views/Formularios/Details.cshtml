@@ -10,6 +10,12 @@
     <h4>Formulario</h4>
     <hr />
     <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.NumAtencion)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.NumAtencion)
+        </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Cne)
         </dt>
@@ -53,6 +59,54 @@
             @Html.DisplayFor(model => model.NumInscripcion)
         </dd>
     </dl>
+    <h4>Enajenantes</h4>
+    <hr />
+    @if (ViewData["Enajenantes"] != null)
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Run/Rut</th>
+                    <th>Porcentaje Derecho</th>
+                    <th>No Acreditado</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var enajenante in (List<Enajenante>)ViewData["Enajenantes"])
+                {
+                    <tr>
+                        <td>@enajenante.RunRut</td>
+                        <td>@enajenante.PorcentajeDerecho</td>
+                        <td>@enajenante.NoAcreditado</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    <h4>Adquirientes</h4>
+    <hr />
+    @if (ViewData["Adquirientes"] != null)
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Run/Rut</th>
+                    <th>Porcentaje Derecho</th>
+                    <th>No Acreditado</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var adquiriente in (List<Adquirente>)ViewData["Adquirientes"])
+                {
+                    <tr>
+                        <td>@adquiriente.RunRut</td>
+                        <td>@adquiriente.PorcentajeDerecho</td>
+                        <td>@adquiriente.NoAcreditado</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
 </div>
 <div>
     <a asp-action="Edit" asp-route-id="@Model?.NumAtencion">Edit</a> |

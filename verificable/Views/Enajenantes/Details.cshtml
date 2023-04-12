@@ -10,6 +10,12 @@
     <h4>Enajenante</h4>
     <hr />
     <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.NumAtencion)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.NumAtencionNavigation.NumAtencion)
+        </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.RunRut)
         </dt>
@@ -27,12 +33,6 @@
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.NoAcreditado)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.NumAtencionNavigation)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.NumAtencionNavigation.NumAtencion)
         </dd>
     </dl>
 </div>
