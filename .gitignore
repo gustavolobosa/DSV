@@ -1,6 +1,8 @@
 # Build and output folders
 bin/
+verificable/bin/
 obj/
+verificable/obj/
 
 # User-specific files
 *.user

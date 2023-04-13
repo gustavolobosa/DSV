@@ -94,7 +94,11 @@ namespace verificable.Controllers
                 for (int i = 0; i < numEnajenantes; i++)
                 {
                     string runRut = Request.Form["enajenantes[" + i + "].run_rut"];
-                    decimal porcentajeDerecho = decimal.Parse(Request.Form["enajenantes[" + i + "].porcentaje_derecho"]);
+                    decimal? porcentajeDerecho = null;
+                    if (!string.IsNullOrEmpty(Request.Form["enajenantes[" + i + "].porcentaje_derecho"]))
+                    {
+                        porcentajeDerecho = decimal.Parse(Request.Form["enajenantes[" + i + "].porcentaje_derecho"]);
+                    }
                     bool noAcreditado = false;
                     string checkboxValue = Request.Form["enajenantes[" + i + "].no_acreditado"].ToString().ToLower();
                     if (checkboxValue == "on" || checkboxValue == "true")
@@ -107,7 +111,11 @@ namespace verificable.Controllers
                 for (int i = 0; i < numAdquirentes; i++)
                 {
                     string runRut = Request.Form["adquirentes[" + i + "].run_rut"];
-                    decimal porcentajeDerecho = decimal.Parse(Request.Form["adquirentes[" + i + "].porcentaje_derecho"]);
+                    decimal? porcentajeDerecho = null;
+                    if (!string.IsNullOrEmpty(Request.Form["adquirentes[" + i + "].porcentaje_derecho"]))
+                    {
+                        porcentajeDerecho = decimal.Parse(Request.Form["adquirentes[" + i + "].porcentaje_derecho"]);
+                    }
                     bool noAcreditado = false;
                     string checkboxValue = Request.Form["adquirentes[" + i + "].no_acreditado"].ToString().ToLower();
                     if (checkboxValue == "on" || checkboxValue == "true")

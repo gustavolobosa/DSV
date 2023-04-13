@@ -52,13 +52,13 @@
                     <tbody>
                         <tr>
                             <td>
-                                <input placeholder="-" type="text" name="enajenantes[0].run_rut" required/>
+                                <input type="text" name="enajenantes[0].run_rut" required/>
                             </td>
                             <td>
-                                <input placeholder=0 type="number" step="0.01" name="enajenantes[0].porcentaje_derecho" required/>
+                                <input type="number" step="0.01" name="enajenantes[0].porcentaje_derecho" required/>
                             </td>
                             <td>
-                                <input placeholder=0 type="checkbox" step="0.01" name="enajenantes[0].no_acreditado" required/>
+                                <input type="checkbox" step="0.01" name="enajenantes[0].no_acreditado" required/>
                             </td>
                             <td>
                                 <button type="button" class="btn btn-danger" onclick="removeEnajenantes(this)">Remove</button>
@@ -84,13 +84,13 @@
                     <tbody>
                         <tr>
                             <td>
-                                <input placeholder="-" type="text" name="adquirentes[0].run_rut" required/>
+                                <input type="text" name="adquirentes[0].run_rut" required/>
                             </td>
                             <td>
-                                <input placeholder=0 type="number" step="0.01" name="adquirentes[0].porcentaje_derecho" required/>
+                                <input type="number" step="0.01" name="adquirentes[0].porcentaje_derecho" required/>
                             </td>
                             <td>
-                                <input placeholder=0 type="checkbox" step="0.01" name="adquirentes[0].no_acreditado" required/>
+                                <input type="checkbox" step="0.01" name="adquirentes[0].no_acreditado" required/>
                             </td>
                             <td>
                                 <button type="button" class="btn btn-danger" onclick="removeAdquirente(this)">Remove</button>
@@ -145,18 +145,19 @@
             var newRow = enajenantesTable.insertRow(-1);
 
             var runRutCell = newRow.insertCell(0);
-            runRutCell.innerHTML = '<input type="text" name="enajenantes[' + enajenantesCount + '].run_rut" />';
+            runRutCell.innerHTML = '<input type="text" name="enajenantes[' + enajenantesCount + '].run_rut" required/>';
 
             var porcentajeCell = newRow.insertCell(1);
-            porcentajeCell.innerHTML = '<input type="number" step="0.01" name="enajenantes[' + enajenantesCount + '].porcentaje_derecho" />';
+            porcentajeCell.innerHTML = '<input type="number" step="0.01" name="enajenantes[' + enajenantesCount + '].porcentaje_derecho" required/>';
 
             var noAcreditadoCell = newRow.insertCell(2);
-            noAcreditadoCell.innerHTML = '<input type="checkbox" step="0.01" name="enajenantes[' + enajenantesCount + '].no_acreditado" />';
+            noAcreditadoCell.innerHTML = '<input type="checkbox" step="0.01" name="enajenantes[' + enajenantesCount + '].no_acreditado" required/>';
 
             var removeCell = newRow.insertCell(3);
             removeCell.innerHTML = '<button type="button" class="btn btn-danger" onclick="removeEnajenantes(this)">Remove</button>';
 
             enajenantesCount++;
+            handleInputPairs();
         }
 
         function removeEnajenantes(button) {
@@ -173,18 +174,19 @@
             newRow = adqTable.insertRow(-1);
 
             runRutCell = newRow.insertCell(0);
-            runRutCell.innerHTML = '<input type="text" name="adquirentes[' + adqCount + '].run_rut" />';
+            runRutCell.innerHTML = '<input type="text" name="adquirentes[' + adqCount + '].run_rut" required/>';
 
             porcentajeCell = newRow.insertCell(1);
-            porcentajeCell.innerHTML = '<input type="number" step="0.01" name="adquirentes[' + adqCount + '].porcentaje_derecho" />';
+            porcentajeCell.innerHTML = '<input type="number" step="0.01" name="adquirentes[' + adqCount + '].porcentaje_derecho" required/>';
 
             noAcreditadoCell = newRow.insertCell(2);
-            noAcreditadoCell.innerHTML = '<input type="checkbox" step="0.01" name="adquirentes[' + adqCount + '].no_acreditado" />';
+            noAcreditadoCell.innerHTML = '<input type="checkbox" step="0.01" name="adquirentes[' + adqCount + '].no_acreditado" required/>';
 
             removeCell = newRow.insertCell(3);
             removeCell.innerHTML = '<button type="button" class="btn btn-danger" onclick="removeAdquirente(this)">Remove</button>';
 
             adqCount++;
+            handleInputPairs();
         }
 
         function removeAdquirente(button) {
@@ -205,5 +207,61 @@
             }
 
         }
+
+        function handleInputPairs() {
+            const adquirientesPairs = document.querySelectorAll('#adquirientes tbody tr');
+            adquirientesPairs.forEach(pair => {
+                const inputPorcentaje = pair.querySelector('input[name*="porcentaje_derecho"]');
+                const inputNoAcreditado = pair.querySelector('input[name*="no_acreditado"]');
+
+                inputPorcentaje.addEventListener('input', () => {
+                    console.log("CLickeado porcentaje");
+                    if (inputPorcentaje.value !== '') {
+                        inputNoAcreditado.disabled = true;
+                    } else {
+                        inputNoAcreditado.disabled = false;
+                    }
+                });
+
+                inputNoAcreditado.addEventListener('change', () => {
+                    console.log("CLickeado no acreditado");
+                    if (inputNoAcreditado.checked) {
+                        inputPorcentaje.disabled = true;
+                    } else {
+                        inputPorcentaje.disabled = false;
+                    }
+                });
+            });
+
+            const enajenantesPairs = document.querySelectorAll('#enajenantes tbody tr');
+            enajenantesPairs.forEach(pair => {
+                const inputPorcentaje = pair.querySelector('input[name*="porcentaje_derecho"]');
+                const inputNoAcreditado = pair.querySelector('input[name*="no_acreditado"]');
+
+                inputPorcentaje.addEventListener('input', () => {
+                    console.log("CLickeado porcentaje");
+                    if (inputPorcentaje.value !== '') {
+                        inputNoAcreditado.disabled = true;
+                    } else {
+                        inputNoAcreditado.disabled = false;
+                    }
+                });
+
+                inputNoAcreditado.addEventListener('change', () => {
+                    console.log("CLickeado no acreditado");
+                    if (inputNoAcreditado.checked) {
+                        inputPorcentaje.disabled = true;
+                    } else {
+                        inputPorcentaje.disabled = false;
+                    }
+                });
+            });
+        }
+        $(document).ready(function () {
+            handleInputPairs('#adquirientes');
+            handleInputPairs('#enajenantes');
+        });
+
+
     </script>
 }
