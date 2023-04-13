@@ -58,7 +58,7 @@
                                 <input placeholder=0  type="number" step="0.01" name="enajenantes[0].porcentaje_derecho" />
                             </td>
                             <td>
-                                <input placeholder=0 type="number" step="0.01" name="enajenantes[0].no_acreditado" />
+                                <input placeholder=0 type="checkbox" step="0.01" name="enajenantes[0].no_acreditado" />
                             </td>
                             <td>
                                 <button type="button" class="btn btn-danger" onclick="removeEnajenantes(this)">Remove</button>
@@ -90,7 +90,7 @@
                                 <input placeholder=0 type="number" step="0.01" name="adquirentes[0].porcentaje_derecho" />
                             </td>
                             <td>
-                                <input placeholder=0 type="number" step="0.01" name="adquirentes[0].no_acreditado" />
+                                <input placeholder=0 type="checkbox" step="0.01" name="adquirentes[0].no_acreditado" />
                             </td>
                             <td>
                                 <button type="button" class="btn btn-danger" onclick="removeAdquirente(this)">Remove</button>
@@ -151,7 +151,7 @@
             porcentajeCell.innerHTML = '<input type="number" step="0.01" name="enajenantes[' + enajenantesCount + '].porcentaje_derecho" />';
 
             var noAcreditadoCell = newRow.insertCell(2);
-            noAcreditadoCell.innerHTML = '<input type="number" step="0.01" name="enajenantes[' + enajenantesCount + '].no_acreditado" />';
+            noAcreditadoCell.innerHTML = '<input type="checkbox" step="0.01" name="enajenantes[' + enajenantesCount + '].no_acreditado" />';
 
             var removeCell = newRow.insertCell(3);
             removeCell.innerHTML = '<button type="button" class="btn btn-danger" onclick="removeEnajenantes(this)">Remove</button>';
@@ -179,7 +179,7 @@
             porcentajeCell.innerHTML = '<input type="number" step="0.01" name="adquirentes[' + adqCount + '].porcentaje_derecho" />';
 
             noAcreditadoCell = newRow.insertCell(2);
-            noAcreditadoCell.innerHTML = '<input type="number" step="0.01" name="adquirentes[' + adqCount + '].no_acreditado" />';
+            noAcreditadoCell.innerHTML = '<input type="checkbox" step="0.01" name="adquirentes[' + adqCount + '].no_acreditado" />';
 
             removeCell = newRow.insertCell(3);
             removeCell.innerHTML = '<button type="button" class="btn btn-danger" onclick="removeAdquirente(this)">Remove</button>';

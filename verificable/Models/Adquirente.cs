@@ -13,7 +13,7 @@ public partial class Adquirente
 
     public double? PorcentajeDerecho { get; set; }
 
-    public double? NoAcreditado { get; set; }
+    public bool? NoAcreditado { get; set; }
 
     public virtual Formulario? NumAtencionNavigation { get; set; }
 }

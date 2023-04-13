@@ -13,7 +13,7 @@ public partial class Enajenante
 
     public double? PorcentajeDerecho { get; set; }
 
-    public double? NoAcreditado { get; set; }
+    public bool? NoAcreditado { get; set; }
 
     public virtual Formulario? NumAtencionNavigation { get; set; }
 }

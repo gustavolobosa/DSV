@@ -95,16 +95,26 @@ namespace verificable.Controllers
                 {
                     string runRut = Request.Form["enajenantes[" + i + "].run_rut"];
                     decimal porcentajeDerecho = decimal.Parse(Request.Form["enajenantes[" + i + "].porcentaje_derecho"]);
-                    decimal noAcreditado = decimal.Parse(Request.Form["enajenantes[" + i + "].no_acreditado"]);
-                    _context.Add(new Enajenante { RunRut = runRut, PorcentajeDerecho = (double?)porcentajeDerecho, NoAcreditado = (double?)noAcreditado, NumAtencion = formulario.NumAtencion });
+                    bool noAcreditado = false;
+                    string checkboxValue = Request.Form["enajenantes[" + i + "].no_acreditado"].ToString().ToLower();
+                    if (checkboxValue == "on" || checkboxValue == "true")
+                    {
+                        noAcreditado = true;
+                    }
+                    _context.Add(new Enajenante { RunRut = runRut, PorcentajeDerecho = (double?)porcentajeDerecho, NoAcreditado = (bool?)noAcreditado, NumAtencion = formulario.NumAtencion });
                 }
 
                 for (int i = 0; i < numAdquirentes; i++)
                 {
                     string runRut = Request.Form["adquirentes[" + i + "].run_rut"];
                     decimal porcentajeDerecho = decimal.Parse(Request.Form["adquirentes[" + i + "].porcentaje_derecho"]);
-                    decimal noAcreditado = decimal.Parse(Request.Form["adquirentes[" + i + "].no_acreditado"]);
-                    _context.Add(new Adquirente { RunRut = runRut, PorcentajeDerecho = (double?)porcentajeDerecho, NoAcreditado = (double?)noAcreditado, NumAtencion = formulario.NumAtencion });
+                    bool noAcreditado = false;
+                    string checkboxValue = Request.Form["adquirentes[" + i + "].no_acreditado"].ToString().ToLower();
+                    if (checkboxValue == "on" || checkboxValue == "true")
+                    {
+                        noAcreditado = true;
+                    }
+                    _context.Add(new Adquirente { RunRut = runRut, PorcentajeDerecho = (double?)porcentajeDerecho, NoAcreditado = (bool?)noAcreditado, NumAtencion = formulario.NumAtencion });
                 }
 
 

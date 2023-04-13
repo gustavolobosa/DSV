@@ -24,7 +24,7 @@ CREATE TABLE enajenantes (
    num_atencion INT NULL,
    run_rut VARCHAR(50) NULL,
    porcentaje_derecho FLOAT NULL,
-   no_acreditado FLOAT NULL,
+   no_acreditado BIT NULL,
    FOREIGN KEY (num_atencion) REFERENCES formularios(num_atencion)
 );
 GO
@@ -34,7 +34,7 @@ CREATE TABLE adquirentes (
    num_atencion INT NULL,
    run_rut VARCHAR(50) NULL,
    porcentaje_derecho FLOAT NULL,
-   no_acreditado FLOAT NULL,
+   no_acreditado BIT NULL,
    FOREIGN KEY (num_atencion) REFERENCES formularios(num_atencion)
 );
 GO
