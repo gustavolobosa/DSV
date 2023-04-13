@@ -198,15 +198,23 @@
             var cneElement = document.getElementsByName("Cne")[0];
             var enajenantesElement = document.getElementById("enajenantes");
 
-            console.log(cneElement.value);
-
             if (cneElement.value === "Regularizacion De Patrimonio") {
                 enajenantesElement.style.display = "none";
+                // remove 'required' attribute from hidden input fields
+                var inputs = enajenantesElement.querySelectorAll("input");
+                for (var i = 0; i < inputs.length; i++) {
+                    inputs[i].removeAttribute("required");
+                }
             } else if (cneElement.value === "Compraventa") {
                 enajenantesElement.style.display = "block";
+                // add 'required' attribute to visible input fields
+                var inputs = enajenantesElement.querySelectorAll("input");
+                for (var i = 0; i < inputs.length; i++) {
+                    inputs[i].setAttribute("required", "");
+                }
             }
-
         }
+
 
         function handleInputPairs() {
             const adquirientesPairs = document.querySelectorAll('#adquirientes tbody tr');
