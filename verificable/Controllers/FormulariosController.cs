@@ -207,6 +207,19 @@ namespace verificable.Controllers
             var formulario = await _context.Formularios.FindAsync(id);
             if (formulario != null)
             {
+                // Delete associated enajenantes first
+                var enajenantes = _context.Enajenantes.Where(e => e.NumAtencion == id);
+                foreach (var enajenante in enajenantes)
+                {
+                    _context.Enajenantes.Remove(enajenante);
+                }
+
+                // Delete associated adquirentes first
+                var adquirentes = _context.Adquirentes.Where(a => a.NumAtencion == id);
+                foreach (var adquirente in adquirentes)
+                {
+                    _context.Adquirentes.Remove(adquirente);
+                }
                 _context.Formularios.Remove(formulario);
             }
             

@@ -25,15 +25,15 @@
                 <h4 class="box-title">Informacion de la Propiedad Enajenada</h4>
                 <span class="col">
                     <label for="comuna">Comuna:</label>
-                    <input type="text" id="comuna" name="comuna">
+                    <input type="text" id="comuna" name="comuna" required>
                 </span>
                 <span class="col">
                     <label for="manzana">Manzana:</label>
-                    <input type="text" id="manzana" name="manzana">
+                    <input type="text" id="manzana" name="manzana" required>
                 </span>
                 <span class="col">
                     <label for="predio">Predio:</label>
-                    <input type="text" id="predio" name="predio">
+                    <input type="text" id="predio" name="predio" required>
                 </span>
              </div>
 
@@ -52,13 +52,13 @@
                     <tbody>
                         <tr>
                             <td>
-                                <input placeholder="-" type="text" name="enajenantes[0].run_rut" />
+                                <input placeholder="-" type="text" name="enajenantes[0].run_rut" required/>
                             </td>
                             <td>
-                                <input placeholder=0  type="number" step="0.01" name="enajenantes[0].porcentaje_derecho" />
+                                <input placeholder=0 type="number" step="0.01" name="enajenantes[0].porcentaje_derecho" required/>
                             </td>
                             <td>
-                                <input placeholder=0 type="checkbox" step="0.01" name="enajenantes[0].no_acreditado" />
+                                <input placeholder=0 type="checkbox" step="0.01" name="enajenantes[0].no_acreditado" required/>
                             </td>
                             <td>
                                 <button type="button" class="btn btn-danger" onclick="removeEnajenantes(this)">Remove</button>
@@ -84,13 +84,13 @@
                     <tbody>
                         <tr>
                             <td>
-                                <input placeholder="-" type="text" name="adquirentes[0].run_rut" />
+                                <input placeholder="-" type="text" name="adquirentes[0].run_rut" required/>
                             </td>
                             <td>
-                                <input placeholder=0 type="number" step="0.01" name="adquirentes[0].porcentaje_derecho" />
+                                <input placeholder=0 type="number" step="0.01" name="adquirentes[0].porcentaje_derecho" required/>
                             </td>
                             <td>
-                                <input placeholder=0 type="checkbox" step="0.01" name="adquirentes[0].no_acreditado" />
+                                <input placeholder=0 type="checkbox" step="0.01" name="adquirentes[0].no_acreditado" required/>
                             </td>
                             <td>
                                 <button type="button" class="btn btn-danger" onclick="removeAdquirente(this)">Remove</button>
@@ -107,15 +107,15 @@
 
                 <span class="col">
                     <label for="fojas">Fojas:</label>
-                    <input type="number" id="fojas" name="fojas">
+                    <input type="number" id="fojas" name="fojas" required>
                 </span>
                 <span class="col">
                     <label for="FechaInscripcion">Fecha de Inscripción:</label>
-                    <input type="date" id="FechaInscripcion" name="FechaInscripcion">
+                    <input type="date" id="FechaInscripcion" name="FechaInscripcion" required>
                 </span>
                 <span class="col">
                     <label for="NumInscripcion">Número de Inscripción:</label>
-                    <input type="number" id="NumInscripcion" name="NumInscripcion">
+                    <input type="number" id="NumInscripcion" name="NumInscripcion" required>
                 </span>
             </div>
 
