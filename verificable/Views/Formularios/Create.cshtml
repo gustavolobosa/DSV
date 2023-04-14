@@ -55,7 +55,7 @@
                                 <input type="text" name="enajenantes[0].run_rut" required/>
                             </td>
                             <td>
-                                <input type="number" step="0.01" name="enajenantes[0].porcentaje_derecho" required max="100" />
+                                <input type="number" step="0.01" name="enajenantes[0].porcentaje_derecho" required min="0" max="100" />
                             </td>
                             <td>
                                 <input type="checkbox" step="0.01" name="enajenantes[0].no_acreditado" required/>
@@ -90,7 +90,7 @@
                                 <input type="text" name="adquirentes[0].run_rut" required/>
                             </td>
                             <td>
-                                <input type="number" step="0.01" name="adquirentes[0].porcentaje_derecho" required max="100" />
+                                <input type="number" step="0.01" name="adquirentes[0].porcentaje_derecho" required min="0" max="100" />
                             </td>
                             <td>
                                 <input type="checkbox" step="0.01" name="adquirentes[0].no_acreditado" required/>
@@ -151,7 +151,7 @@
             runRutCell.innerHTML = '<input type="text" name="enajenantes[' + enajenantesCount + '].run_rut" required/>';
 
             var porcentajeCell = newRow.insertCell(1);
-            porcentajeCell.innerHTML = '<input type="number" step="0.01" name="enajenantes[' + enajenantesCount + '].porcentaje_derecho" required max="100"/>';
+            porcentajeCell.innerHTML = '<input type="number" step="0.01" name="enajenantes[' + enajenantesCount + '].porcentaje_derecho" required min="0" max="100"/>';
 
             var noAcreditadoCell = newRow.insertCell(2);
             noAcreditadoCell.innerHTML = '<input type="checkbox" step="0.01" name="enajenantes[' + enajenantesCount + '].no_acreditado" required/>';
@@ -180,7 +180,7 @@
             runRutCell.innerHTML = '<input type="text" name="adquirentes[' + adqCount + '].run_rut" required/>';
 
             porcentajeCell = newRow.insertCell(1);
-            porcentajeCell.innerHTML = '<input type="number" step="0.01" name="adquirentes[' + adqCount + '].porcentaje_derecho" required max="100"/>';
+            porcentajeCell.innerHTML = '<input type="number" step="0.01" name="adquirentes[' + adqCount + '].porcentaje_derecho" min="0" required max="100"/>';
 
             noAcreditadoCell = newRow.insertCell(2);
             noAcreditadoCell.innerHTML = '<input type="checkbox" step="0.01" name="adquirentes[' + adqCount + '].no_acreditado" required/>';
