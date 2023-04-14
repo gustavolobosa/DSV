@@ -19,7 +19,7 @@ public partial class Multipropietario
 
     public int? Fojas { get; set; }
 
-    public DateTime FechaInscripcion { get; set; }
+    public DateTime? FechaInscripcion { get; set; }
 
     public int? NumInscripcion { get; set; }
 

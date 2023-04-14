@@ -123,8 +123,13 @@ namespace verificable.Controllers
                         noAcreditado = true;
                     }
                     _context.Add(new Adquirente { RunRut = runRut, PorcentajeDerecho = (double?)porcentajeDerecho, NoAcreditado = (bool?)noAcreditado, NumAtencion = formulario.NumAtencion });
+                    if (formulario.Cne == "Regularizacion De Patrimonio")
+                    {
+                        _context.Add(new Multipropietario {Comuna = formulario.Comuna, Manzana = formulario.Manzana, Predio = formulario.Predio, RunRut = runRut, 
+                                                           PorcentajeDerecho = (double?)porcentajeDerecho, Fojas = formulario.Fojas, FechaInscripcion = formulario.FechaInscripcion, 
+                                                           NumInscripcion = formulario.NumInscripcion, VigenciaInicial = formulario.FechaInscripcion });
+                    }
                 }
-
 
                 // Guarda los cambios en la base de datos
                 await _context.SaveChangesAsync();

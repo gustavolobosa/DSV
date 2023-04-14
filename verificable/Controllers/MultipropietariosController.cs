@@ -38,7 +38,7 @@ namespace verificable.Controllers
                     .Where(m => m.Comuna.Contains(comuna) 
                     && m.Manzana.Contains(manzana) 
                     && m.Predio.Contains(predio)
-                    && m.FechaInscripcion.Year == year)
+                    && m.FechaInscripcion.Value.Year == year)
                     .ToListAsync();
                 return View(multipropietarios);
             }
