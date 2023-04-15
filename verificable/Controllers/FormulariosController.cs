@@ -148,6 +148,7 @@ namespace verificable.Controllers
                     if (checkboxValue == "on" || checkboxValue == "true")
                     {
                         noAcreditado = true;
+                        porcentajeDerecho = 0;
                     }
                     _context.Add(new Adquirente { RunRut = runRut, PorcentajeDerecho = (double?)porcentajeDerecho, NoAcreditado = (bool?)noAcreditado, NumAtencion = formulario.NumAtencion });
                     if (formulario.Cne == "Regularizacion De Patrimonio")
