@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -91,6 +92,32 @@ namespace verificable.Controllers
                 //Console.WriteLine("num of enajenante: " + numEnajenantes);
                 //Console.WriteLine("num of adquriente: " + numAdquirentes);
 
+
+                //el siguente bloque es para ver a cuales adquirentes les falta un porcentaje y calcular la suma de pocentajes total
+                decimal? porcentajeDerechoAdq = 0;
+                List<string> adqWithoutPercentage = new List<string>();
+
+                for (int i = 0; i < numAdquirentes; i++)
+                {
+                    string runRutAdqToValidatePercentage = Request.Form["adquirentes[" + i + "].run_rut"];
+                    
+                    if (!string.IsNullOrEmpty(Request.Form["adquirentes[" + i + "].porcentaje_derecho"]))
+                    {
+                        porcentajeDerechoAdq += decimal.Parse(Request.Form["adquirentes[" + i + "].porcentaje_derecho"]);
+                    }
+
+                    string checkboxValueAdq = Request.Form["adquirentes[" + i + "].no_acreditado"].ToString().ToLower();
+                    if (checkboxValueAdq == "on" || checkboxValueAdq == "true")
+                    {
+                        adqWithoutPercentage.Add(runRutAdqToValidatePercentage);
+                    }
+                }
+
+                //Calcula cual es el porcentaje que se le da a cada adquiriente
+                float percentagePerAdq = ((float)(100 - porcentajeDerechoAdq))/adqWithoutPercentage.Count;
+
+                
+
                 for (int i = 0; i < numEnajenantes; i++)
                 {
                     string runRut = Request.Form["enajenantes[" + i + "].run_rut"];
@@ -125,6 +152,10 @@ namespace verificable.Controllers
                     _context.Add(new Adquirente { RunRut = runRut, PorcentajeDerecho = (double?)porcentajeDerecho, NoAcreditado = (bool?)noAcreditado, NumAtencion = formulario.NumAtencion });
                     if (formulario.Cne == "Regularizacion De Patrimonio")
                     {
+                        if (noAcreditado)
+                        {
+                            porcentajeDerecho = (decimal?)percentagePerAdq;
+                        }
                         _context.Add(new Multipropietario {Comuna = formulario.Comuna, Manzana = formulario.Manzana, Predio = formulario.Predio, RunRut = runRut, 
                                                            PorcentajeDerecho = (double?)porcentajeDerecho, Fojas = formulario.Fojas, FechaInscripcion = formulario.FechaInscripcion, 
                                                            NumInscripcion = formulario.NumInscripcion, VigenciaInicial = formulario.FechaInscripcion });
