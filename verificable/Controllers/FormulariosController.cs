@@ -65,7 +65,6 @@ namespace verificable.Controllers
 
         public async Task<IActionResult> Create([Bind("NumAtencion,Cne,Comuna,Manzana,Predio,Fojas,FechaInscripcion,NumInscripcion")] Formulario formulario)
         {
-            //formulario.FechaInscripcion = DateTime.ParseExact(Request.Form["fecha_inscripcion"], "yyyy-MM-dd", CultureInfo.InvariantCulture);
             if (ModelState.IsValid)
             {
                 _context.Add(formulario);
@@ -153,16 +152,19 @@ namespace verificable.Controllers
                     _context.Add(new Adquirente { RunRut = runRut, PorcentajeDerecho = (double?)porcentajeDerecho, NoAcreditado = (bool?)noAcreditado, NumAtencion = formulario.NumAtencion });
                     if (formulario.Cne == "Regularizacion De Patrimonio")
                     {
-                        if (noAcreditado)
+                        _context.Add(new Multipropietario
                         {
-                            porcentajeDerecho = (decimal?)percentagePerAdq;
-                        }
-                        DateTime fechaInscripcion = formulario.FechaInscripcion.HasValue && formulario.FechaInscripcion.Value.Year < 2019 ? new DateTime(2019, 1, 1) : formulario.FechaInscripcion.Value;
-
-                        _context.Add(new Multipropietario {Comuna = formulario.Comuna, Manzana = formulario.Manzana, Predio = formulario.Predio, RunRut = runRut, 
-                                                           PorcentajeDerecho = (double?)porcentajeDerecho, Fojas = formulario.Fojas, FechaInscripcion = formulario.FechaInscripcion, 
-                                                           NumInscripcion = formulario.NumInscripcion, VigenciaInicial = fechaInscripcion });
-                    }
+                            Comuna = formulario.Comuna,
+                            Manzana = formulario.Manzana,
+                            Predio = formulario.Predio,                     
+                            RunRut = runRut,
+                            PorcentajeDerecho = (double?)porcentajeDerecho,
+                            Fojas = formulario.Fojas,
+                            FechaInscripcion = formulario.FechaInscripcion,
+                            NumInscripcion = formulario.NumInscripcion,
+                            VigenciaInicial = formulario.FechaInscripcion
+                        });
+                    }  
                 }
 
                 // Guarda los cambios en la base de datos

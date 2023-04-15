@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -16,6 +17,46 @@ namespace verificable.Controllers
         public MultipropietariosController(BbddverificableContext context)
         {
             _context = context;
+
+            var multipropietarios = _context.Multipropietarios.ToList();
+            foreach (var multipropietario in multipropietarios)
+            {
+                var comuna = multipropietario.Comuna;
+                var manzana = multipropietario.Manzana;
+                var predio = multipropietario.Predio;
+                var fecha = multipropietario.FechaInscripcion;
+                var numInscripcion = multipropietario.NumInscripcion;
+
+                foreach(var comparison in multipropietarios)
+                {
+                    if (comparison.Comuna == comuna && comparison.Manzana == manzana && comparison.Predio == predio &&
+                        comparison.FechaInscripcion < fecha && comparison.VigenciaFinal == null)
+                    {
+                        comparison.VigenciaFinal = fecha;
+                    }
+                    else if (comparison.Comuna == comuna && comparison.Manzana == manzana && comparison.Predio == predio &&
+                        comparison.FechaInscripcion == fecha && comparison.VigenciaFinal == null)
+                    {
+                        if(comparison.NumInscripcion > numInscripcion)
+                        {
+                            multipropietario.VigenciaFinal = comparison.FechaInscripcion;
+                        }
+                        else if (comparison.NumInscripcion > numInscripcion)
+                        {
+                            comparison.VigenciaFinal = fecha;
+                        }
+                        
+                    }
+                    else if (comparison.Comuna == comuna && comparison.Manzana == manzana && comparison.Predio == predio &&
+                        comparison.FechaInscripcion > fecha && comparison.VigenciaFinal != null)
+                    {
+                        _context.Remove(multipropietario);
+
+                    }
+                }
+            }
+            _context.SaveChanges();
+
         }
 
         // GET: Multipropietarios
