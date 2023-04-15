@@ -157,9 +157,11 @@ namespace verificable.Controllers
                         {
                             porcentajeDerecho = (decimal?)percentagePerAdq;
                         }
+                        DateTime fechaInscripcion = formulario.FechaInscripcion.HasValue && formulario.FechaInscripcion.Value.Year < 2019 ? new DateTime(2019, 1, 1) : formulario.FechaInscripcion.Value;
+
                         _context.Add(new Multipropietario {Comuna = formulario.Comuna, Manzana = formulario.Manzana, Predio = formulario.Predio, RunRut = runRut, 
                                                            PorcentajeDerecho = (double?)porcentajeDerecho, Fojas = formulario.Fojas, FechaInscripcion = formulario.FechaInscripcion, 
-                                                           NumInscripcion = formulario.NumInscripcion, VigenciaInicial = formulario.FechaInscripcion });
+                                                           NumInscripcion = formulario.NumInscripcion, VigenciaInicial = fechaInscripcion });
                     }
                 }
 
