@@ -17,7 +17,7 @@ namespace verificable.Controllers
         public MultipropietariosController(BbddverificableContext context)
         {
             _context = context;
-
+            
             var multipropietarios = _context.Multipropietarios.ToList();
             foreach (var multipropietario in multipropietarios)
             {
@@ -72,12 +72,12 @@ namespace verificable.Controllers
                 var manzana = Request.Form["manzanaInput"];
                 var predio = Request.Form["predioInput"];
                 var year = int.Parse(Request.Form["añoInput"]);
-                
+
 
 
                 var multipropietarios = await _context.Multipropietarios
-                    .Where(m => m.Comuna.Contains(comuna) 
-                    && m.Manzana.Contains(manzana) 
+                    .Where(m => m.Comuna.Contains(comuna)
+                    && m.Manzana.Contains(manzana)
                     && m.Predio.Contains(predio)
                     && m.FechaInscripcion.Value.Year == year)
                     .ToListAsync();

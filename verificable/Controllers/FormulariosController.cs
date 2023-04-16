@@ -164,6 +164,11 @@ namespace verificable.Controllers
                             NumInscripcion = formulario.NumInscripcion,
                             VigenciaInicial = formulario.FechaInscripcion
                         });
+                        if (!ComunaExists(formulario.Comuna))
+                        {
+                            _context.Add(new Comuna { Nombre = formulario.Comuna });
+                        }
+                        
                     }  
                 }
 
@@ -279,6 +284,10 @@ namespace verificable.Controllers
         private bool FormularioExists(int id)
         {
           return (_context.Formularios?.Any(e => e.NumAtencion == id)).GetValueOrDefault();
+        }
+        public bool ComunaExists(string nombre)
+        {
+            return _context.Comunas.Any(e => e.Nombre == nombre);
         }
     }
 }

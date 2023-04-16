@@ -54,4 +54,9 @@ CREATE TABLE multipropietarios (
 
 );
 GO
+CREATE TABLE comunas (
+   id INT PRIMARY KEY IDENTITY(1,1),
+   nombre VARCHAR(50) NULL
+);
+GO
 ´´´
