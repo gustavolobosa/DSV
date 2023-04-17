@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -61,16 +62,48 @@ namespace verificable.Controllers
         }
 
         // GET: Multipropietarios
-        public async Task<IActionResult> Index(string comunaInput, string manzanaInput, string predioInput, string añoInput)
+        public async Task<IActionResult> Index(string? comunaInput, string? manzanaInput, string predioInput, string añoInput)
         {
 
-            var MultipropietarioComunaViewModel = new MultipropietarioComunaViewModel
+            List<Comuna> comunas = new List<Comuna>();
+            List<Multipropietario> multipropietarios = new List<Multipropietario>();
+            if (!string.IsNullOrEmpty(comunaInput) && !string.IsNullOrEmpty(manzanaInput) && !string.IsNullOrEmpty(predioInput) && !string.IsNullOrEmpty(añoInput))
             {
-                MultipropietariosList = _context.Multipropietarios.ToList(),
-                ComunasList = _context.Comunas.ToList()
-            };
-            return View(MultipropietarioComunaViewModel);
+                var comuna = Request.Form["comunaInput"];
+                var manzana = Request.Form["manzanaInput"];
+                var predio = Request.Form["predioInput"];
+                var year = int.Parse(Request.Form["añoInput"]);
+                //var year = DateTime.ParseExact(Request.Form["añoInput"], "yyyy", CultureInfo.InvariantCulture);
 
+                comunas = await _context.Comunas.ToListAsync();
+
+                multipropietarios = await _context.Multipropietarios.Where(m => m.Comuna.Contains(comuna)
+                    && m.Manzana.Contains(manzana)
+                    && m.Predio.Contains(predio)
+                    && m.FechaInscripcion.Value.Year <= year
+                    && m.VigenciaFinal == null)
+                    .ToListAsync();
+
+                var MultipropietarioComunaViewModel = new MultipropietarioComunaViewModel
+                {
+                    MultipropietariosList = multipropietarios,
+                    ComunasList = comunas
+                };
+                return View(MultipropietarioComunaViewModel);
+            }
+            else
+            {
+                comunas = await _context.Comunas.ToListAsync();
+                multipropietarios = await _context.Multipropietarios.ToListAsync();
+
+
+                var MultipropietarioComunaViewModel = new MultipropietarioComunaViewModel
+                {
+                    MultipropietariosList = multipropietarios,
+                    ComunasList = comunas
+                };
+                return View(MultipropietarioComunaViewModel);
+            }
             //if (string.IsNullOrWhiteSpace(comunaInput))
             //{
             //    return View(await _context.Multipropietarios.ToListAsync());
@@ -93,7 +126,7 @@ namespace verificable.Controllers
 
             //    //List<Comuna> comunas = new List<Comuna>();
             //    //List<Multipropietario> multipropietarios = new List<Multipropietario>();
-                
+
             //    //comunas = _context.Comunas.ToList();
             //    //multipropietarios = _context.Multipropietarios.ToList();
             //}
