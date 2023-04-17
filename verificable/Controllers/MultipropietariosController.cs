@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using verificable.Models;
+using verificable.ViewModels;
 
 namespace verificable.Controllers
 {
@@ -60,29 +61,42 @@ namespace verificable.Controllers
         }
 
         // GET: Multipropietarios
-        public async Task<IActionResult> Index(string comunaInput)
+        public async Task<IActionResult> Index(string comunaInput, string manzanaInput, string predioInput, string añoInput)
         {
-            if (string.IsNullOrWhiteSpace(comunaInput))
+
+            var MultipropietarioComunaViewModel = new MultipropietarioComunaViewModel
             {
-                return View(await _context.Multipropietarios.ToListAsync());
-            }
-            else
-            {
-                var comuna = Request.Form["comunaInput"];
-                var manzana = Request.Form["manzanaInput"];
-                var predio = Request.Form["predioInput"];
-                var year = int.Parse(Request.Form["añoInput"]);
+                MultipropietariosList = _context.Multipropietarios.ToList(),
+                ComunasList = _context.Comunas.ToList()
+            };
+            return View(MultipropietarioComunaViewModel);
+
+            //if (string.IsNullOrWhiteSpace(comunaInput))
+            //{
+            //    return View(await _context.Multipropietarios.ToListAsync());
+            //}
+            //else
+            //{
+            //    //var comuna = Request.Form["comunaInput"];
+            //    //var manzana = Request.Form["manzanaInput"];
+            //    //var predio = Request.Form["predioInput"];
+            //    //var year = int.Parse(Request.Form["añoInput"]);
 
 
 
-                var multipropietarios = await _context.Multipropietarios
-                    .Where(m => m.Comuna.Contains(comuna)
-                    && m.Manzana.Contains(manzana)
-                    && m.Predio.Contains(predio)
-                    && m.FechaInscripcion.Value.Year == year)
-                    .ToListAsync();
-                return View(multipropietarios);
-            }
+            //    //var multipropietarios = await _context.Multipropietarios
+            //    //    .Where(m => m.Comuna.Contains(comuna)
+            //    //    && m.Manzana.Contains(manzana)
+            //    //    && m.Predio.Contains(predio)
+            //    //    && m.FechaInscripcion.Value.Year == year)
+            //    //    .ToListAsync();
+
+            //    //List<Comuna> comunas = new List<Comuna>();
+            //    //List<Multipropietario> multipropietarios = new List<Multipropietario>();
+                
+            //    //comunas = _context.Comunas.ToList();
+            //    //multipropietarios = _context.Multipropietarios.ToList();
+            //}
         }
 
 

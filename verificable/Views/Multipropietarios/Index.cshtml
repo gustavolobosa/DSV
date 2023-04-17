@@ -1,4 +1,4 @@
-﻿@model IEnumerable<verificable.Models.Multipropietario>
+﻿@model verificable.ViewModels.MultipropietarioComunaViewModel
 
 @{
     ViewData["Title"] = "Index";
@@ -13,19 +13,25 @@
 {
     <div class="form-group">
         <label for="searchInput">Comuna:</label>
-        <input type="text" name="comunaInput" id="comunaInput" class="form-control" />
+        <select name="comunaInput" id="comunaInput" class="form-control" required>
+            <option value="">Seleccione una Comuna</option>
+            @foreach (var comuna in Model.ComunasList)
+            {
+                <option value="@comuna.Nombre">@comuna.Nombre</option>
+            }
+        </select>
     </div>
     <div class="form-group">
         <label for="searchInput">manzana:</label>
-        <input type="text" name="manzanaInput" id="manzanaInput" class="form-control" />
+        <input type="text" name="manzanaInput" id="manzanaInput" class="form-control" required />
     </div>
     <div class="form-group">
         <label for="searchInput">predio:</label>
-        <input type="text" name="predioInput" id="predioInput" class="form-control" />
+        <input type="text" name="predioInput" id="predioInput" class="form-control" required />
     </div>
     <div class="form-group">
         <label for="searchInput">año:</label>
-        <input type="text" name="añoInput" id="añoInput" class="form-control" />
+        <input type="text" name="añoInput" id="añoInput" class="form-control" required />
     </div>
     <button type="submit" class="btn btn-primary">Buscar</button>
 }
@@ -46,7 +52,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var multipropietario in Model)
+        @foreach (var multipropietario in Model.MultipropietariosList)
         {
             <tr>
                 <td>@multipropietario.Comuna</td>

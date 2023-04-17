@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using verificable.Models;
+using verificable.ViewModels;
 
 namespace verificable.Controllers
 {
@@ -53,7 +54,12 @@ namespace verificable.Controllers
         // GET: Formularios/Create
         public IActionResult Create()
         {
-            return View();
+            var FormularioComunaViewModel = new FormularioComunaViewModel
+            {
+                FormulariosList = _context.Formularios.ToList(),
+                ComunasList = _context.Comunas.ToList()
+            };
+            return View(FormularioComunaViewModel);
         }
 
         // POST: Formularios/Create

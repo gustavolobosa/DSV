@@ -1,4 +1,4 @@
-﻿@model verificable.Models.Formulario
+﻿@model verificable.ViewModels.FormularioComunaViewModel
 
 @{
     ViewData["Title"] = "Create";
@@ -23,10 +23,13 @@
 
             <div class="border">
                 <h4 class="box-title">Informacion de la Propiedad Enajenada</h4>
-                <span class="col">
-                    <label for="comuna">Comuna:</label>
-                    <input type="text" id="comuna" name="comuna" required>
-                </span>
+                <select id="comuna" name="comuna" required>
+                    <option value="">Seleccione una Comuna</option>
+                    @foreach (var comuna in Model.ComunasList)
+                    {
+                        <option value="@comuna.Nombre">@comuna.Nombre</option>
+                    }
+                </select>
                 <span class="col">
                     <label for="manzana">Manzana:</label>
                     <input type="text" id="manzana" name="manzana" required>
