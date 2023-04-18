@@ -27,30 +27,31 @@ namespace verificable.Controllers
                 var manzana = multipropietario.Manzana;
                 var predio = multipropietario.Predio;
                 var fecha = multipropietario.FechaInscripcion;
+                var fechaYear = multipropietario.FechaInscripcion.Value.Year;
                 var numInscripcion = multipropietario.NumInscripcion;
 
                 foreach(var comparison in multipropietarios)
                 {
                     if (comparison.Comuna == comuna && comparison.Manzana == manzana && comparison.Predio == predio &&
-                        comparison.FechaInscripcion < fecha && comparison.VigenciaFinal == null)
+                        comparison.FechaInscripcion.Value.Year < fechaYear && comparison.VigenciaFinal == null)
                     {
                         comparison.VigenciaFinal = fecha;
                     }
                     else if (comparison.Comuna == comuna && comparison.Manzana == manzana && comparison.Predio == predio &&
-                        comparison.FechaInscripcion == fecha && comparison.VigenciaFinal == null)
+                        comparison.FechaInscripcion.Value.Year == fechaYear)
                     {
                         if(comparison.NumInscripcion > numInscripcion)
                         {
-                            multipropietario.VigenciaFinal = comparison.FechaInscripcion;
+                            _context.Remove(multipropietario);
                         }
-                        else if (comparison.NumInscripcion > numInscripcion)
+                        else if (comparison.NumInscripcion < numInscripcion)
                         {
-                            comparison.VigenciaFinal = fecha;
+                            _context.Remove(comparison);
                         }
                         
                     }
                     else if (comparison.Comuna == comuna && comparison.Manzana == manzana && comparison.Predio == predio &&
-                        comparison.FechaInscripcion > fecha && comparison.VigenciaFinal != null)
+                        comparison.FechaInscripcion.Value.Year > fechaYear && comparison.VigenciaFinal != null)
                     {
                         _context.Remove(multipropietario);
 
@@ -64,7 +65,6 @@ namespace verificable.Controllers
         // GET: Multipropietarios
         public async Task<IActionResult> Index(string? comunaInput, string? manzanaInput, string predioInput, string añoInput)
         {
-
             List<Comuna> comunas = new List<Comuna>();
             List<Multipropietario> multipropietarios = new List<Multipropietario>();
             if (!string.IsNullOrEmpty(comunaInput) && !string.IsNullOrEmpty(manzanaInput) && !string.IsNullOrEmpty(predioInput) && !string.IsNullOrEmpty(añoInput))
@@ -73,15 +73,13 @@ namespace verificable.Controllers
                 var manzana = Request.Form["manzanaInput"];
                 var predio = Request.Form["predioInput"];
                 var year = int.Parse(Request.Form["añoInput"]);
-                //var year = DateTime.ParseExact(Request.Form["añoInput"], "yyyy", CultureInfo.InvariantCulture);
 
                 comunas = await _context.Comunas.ToListAsync();
 
                 multipropietarios = await _context.Multipropietarios.Where(m => m.Comuna.Contains(comuna)
                     && m.Manzana.Contains(manzana)
                     && m.Predio.Contains(predio)
-                    && m.FechaInscripcion.Value.Year <= year
-                    && m.VigenciaFinal == null)
+                    && m.FechaInscripcion.Value.Year <= year)
                     .ToListAsync();
 
                 var MultipropietarioComunaViewModel = new MultipropietarioComunaViewModel
@@ -94,7 +92,6 @@ namespace verificable.Controllers
             else
             {
                 comunas = await _context.Comunas.ToListAsync();
-                multipropietarios = await _context.Multipropietarios.ToListAsync();
 
 
                 var MultipropietarioComunaViewModel = new MultipropietarioComunaViewModel
@@ -104,36 +101,7 @@ namespace verificable.Controllers
                 };
                 return View(MultipropietarioComunaViewModel);
             }
-            //if (string.IsNullOrWhiteSpace(comunaInput))
-            //{
-            //    return View(await _context.Multipropietarios.ToListAsync());
-            //}
-            //else
-            //{
-            //    //var comuna = Request.Form["comunaInput"];
-            //    //var manzana = Request.Form["manzanaInput"];
-            //    //var predio = Request.Form["predioInput"];
-            //    //var year = int.Parse(Request.Form["añoInput"]);
-
-
-
-            //    //var multipropietarios = await _context.Multipropietarios
-            //    //    .Where(m => m.Comuna.Contains(comuna)
-            //    //    && m.Manzana.Contains(manzana)
-            //    //    && m.Predio.Contains(predio)
-            //    //    && m.FechaInscripcion.Value.Year == year)
-            //    //    .ToListAsync();
-
-            //    //List<Comuna> comunas = new List<Comuna>();
-            //    //List<Multipropietario> multipropietarios = new List<Multipropietario>();
-
-            //    //comunas = _context.Comunas.ToList();
-            //    //multipropietarios = _context.Multipropietarios.ToList();
-            //}
         }
-
-
-
 
         // GET: Multipropietarios/Details/5
         public async Task<IActionResult> Details(int? id)
