@@ -160,6 +160,12 @@ namespace verificable.Controllers
                     _context.Add(new Adquirente { RunRut = runRut, PorcentajeDerecho = (double?)porcentajeDerecho, NoAcreditado = (bool?)noAcreditado, NumAtencion = formulario.NumAtencion });
                     if (formulario.Cne == "Regularizacion De Patrimonio")
                     {
+                        DateTime fechaInscripcion = (DateTime)formulario.FechaInscripcion;
+
+                        if (fechaInscripcion.Year < 2019)
+                        {
+                            fechaInscripcion = new DateTime(2019, 1, 1);
+                        }
                         _context.Add(new Multipropietario
                         {
                             Comuna = formulario.Comuna,
@@ -170,7 +176,7 @@ namespace verificable.Controllers
                             Fojas = formulario.Fojas,
                             FechaInscripcion = formulario.FechaInscripcion,
                             NumInscripcion = formulario.NumInscripcion,
-                            VigenciaInicial = formulario.FechaInscripcion
+                            VigenciaInicial = fechaInscripcion
                         });
                         if (!ComunaExists(formulario.Comuna))
                         {

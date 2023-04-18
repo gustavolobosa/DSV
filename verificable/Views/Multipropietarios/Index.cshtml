@@ -63,8 +63,10 @@
                 <td>@multipropietario.FechaInscripcion</td>
                 <td>@multipropietario.NumInscripcion</td>
                 <td>@multipropietario.PorcentajeDerecho</td>
-                <td>@multipropietario.VigenciaInicial</td>
-                <td>@multipropietario.VigenciaFinal</td>
+                <td>@(multipropietario.VigenciaInicial != null ? multipropietario.VigenciaInicial.Value.ToString("yyyy") : "-")</td>
+                <td>@(multipropietario.VigenciaFinal != null ? multipropietario.VigenciaFinal.Value.ToString("yyyy") : "-")</td>
+
+
             </tr>
         }
     </tbody>
