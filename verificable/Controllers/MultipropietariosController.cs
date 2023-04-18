@@ -32,13 +32,16 @@ namespace verificable.Controllers
 
                 foreach(var comparison in multipropietarios)
                 {
-                    if (comparison.Comuna == comuna && comparison.Manzana == manzana && comparison.Predio == predio &&
-                        comparison.FechaInscripcion.Value.Year < fechaYear && comparison.VigenciaFinal == null)
+                    bool samePlace = comparison.Comuna == comuna && comparison.Manzana == manzana && comparison.Predio == predio;
+                    bool minorDate = comparison.FechaInscripcion.Value.Year < fechaYear && comparison.VigenciaFinal == null;
+                    bool sameDate = comparison.FechaInscripcion.Value.Year == fechaYear;
+                    bool mayorDate = comparison.FechaInscripcion.Value.Year > fechaYear && comparison.VigenciaFinal != null;
+
+                    if (samePlace && minorDate)
                     {
                         comparison.VigenciaFinal = fecha;
                     }
-                    else if (comparison.Comuna == comuna && comparison.Manzana == manzana && comparison.Predio == predio &&
-                        comparison.FechaInscripcion.Value.Year == fechaYear)
+                    else if (samePlace && sameDate)
                     {
                         if(comparison.NumInscripcion > numInscripcion)
                         {
@@ -50,8 +53,7 @@ namespace verificable.Controllers
                         }
                         
                     }
-                    else if (comparison.Comuna == comuna && comparison.Manzana == manzana && comparison.Predio == predio &&
-                        comparison.FechaInscripcion.Value.Year > fechaYear && comparison.VigenciaFinal != null)
+                    else if (samePlace && mayorDate)
                     {
                         _context.Remove(multipropietario);
 
