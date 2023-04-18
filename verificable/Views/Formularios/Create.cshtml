@@ -234,18 +234,24 @@
 
                 inputPorcentaje.addEventListener('input', () => {
                     console.log("CLickeado porcentaje");
-                    if (inputPorcentaje.value !== '') {
+                    if (inputPorcentaje.value.length !== 0) 
+                    {
                         inputNoAcreditado.disabled = true;
-                    } else {
+                    } 
+                    else 
+                    {
                         inputNoAcreditado.disabled = false;
                     }
                 });
 
                 inputNoAcreditado.addEventListener('change', () => {
                     console.log("CLickeado no acreditado");
-                    if (inputNoAcreditado.checked) {
+                    if (inputNoAcreditado.checked) 
+                    {
                         inputPorcentaje.disabled = true;
-                    } else {
+                    } 
+                    else 
+                    {
                         inputPorcentaje.disabled = false;
                     }
                 });
@@ -258,18 +264,24 @@
 
                 inputPorcentaje.addEventListener('input', () => {
                     console.log("CLickeado porcentaje");
-                    if (inputPorcentaje.value !== '') {
+                    if (inputPorcentaje.value.length !== 0) 
+                    {
                         inputNoAcreditado.disabled = true;
-                    } else {
+                    } 
+                    else 
+                    {
                         inputNoAcreditado.disabled = false;
                     }
                 });
 
                 inputNoAcreditado.addEventListener('change', () => {
                     console.log("CLickeado no acreditado");
-                    if (inputNoAcreditado.checked) {
+                    if (inputNoAcreditado.checked) 
+                    {
                         inputPorcentaje.disabled = true;
-                    } else {
+                    } 
+                    else 
+                    {
                         inputPorcentaje.disabled = false;
                     }
                 });
@@ -282,33 +294,39 @@
 
         function validatePorcentajeDerecho() {
 
-            //obtiene todos los elementos que comienzan con enajenante y terminan con porcentaje_derecho
+            //Obtiene todos los elementos que comienzan con enajenante y terminan con porcentaje_derecho.
             var porcentajesEnajenantes = document.querySelectorAll('[name^="enajenantes"][name$="porcentaje_derecho"]');
             var porcentajesAdquirentes = document.querySelectorAll('[name^="adquirentes"][name$="porcentaje_derecho"]');
             var totalPorcentajeEnajenantes = 0;
             var totalPorcentajeAdquirentes = 0;
 
-            for (var i = 0; i < porcentajesEnajenantes.length; i++) {
+            for (var i = 0; i < porcentajesEnajenantes.length; i++) 
+            {
 
-                if (porcentajesEnajenantes[i].value !== "") {
+                if (porcentajesEnajenantes[i].value.lenth !== 0) 
+                {
                     totalPorcentajeEnajenantes += parseFloat(porcentajesEnajenantes[i].value);
                 }
                 
             }
 
-            for (var i = 0; i < porcentajesAdquirentes.length; i++) {
+            for (var i = 0; i < porcentajesAdquirentes.length; i++) 
+            {
 
-                if (porcentajesAdquirentes[i].value !== "") {
+                if (porcentajesAdquirentes[i].value.length !== 0) 
+                {
                     totalPorcentajeAdquirentes += parseFloat(porcentajesAdquirentes[i].value);
                 }
 
             }
 
-            if (totalPorcentajeEnajenantes > 100) {
+            if (totalPorcentajeEnajenantes > 100) 
+            {
                 alert("La suma de los porcentajes de los enajenantes no debe superar 100.");
                 return false;
             }
-            if (totalPorcentajeAdquirentes > 100) {
+            if (totalPorcentajeAdquirentes > 100) 
+            {
                 alert("La suma de los porcentajes de los adquirentes no debe superar 100.");
                 return false;
             }
