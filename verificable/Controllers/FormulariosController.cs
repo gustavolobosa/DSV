@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -79,7 +80,10 @@ namespace verificable.Controllers
                 int numEnajenantes = 0;
                 foreach (string key in Request.Form.Keys)
                 {
-                    if (key.StartsWith("enajenantes") && key.EndsWith("run_rut"))
+                    string valor = Request.Form[key];
+                    bool validEnajenante = key.StartsWith("enajenantes") && key.EndsWith("run_rut") && valor.Length != 0;
+
+                    if (validEnajenante)
                     {
                         numEnajenantes++;
                     }
@@ -88,17 +92,16 @@ namespace verificable.Controllers
                 int numAdquirentes = 0;
                 foreach (string key in Request.Form.Keys)
                 {
-                    if (key.StartsWith("adquirentes") && key.EndsWith("run_rut"))
+                    string valor = Request.Form[key];
+                    bool validAdquirente = key.StartsWith("adquirentes") && key.EndsWith("run_rut") && valor.Length != 0;
+
+                    if (validAdquirente)
                     {
                         numAdquirentes++;
                     }
                 }
 
-                //Console.WriteLine("num of enajenante: " + numEnajenantes);
-                //Console.WriteLine("num of adquriente: " + numAdquirentes);
-
-
-                //el siguente bloque es para ver a cuales adquirentes les falta un porcentaje y calcular la suma de pocentajes total
+                //El siguente bloque es para ver a cuales adquirentes les falta un porcentaje y calcular la suma de pocentajes total.
                 decimal? porcentajeDerechoAdq = 0;
                 List<string> adqWithoutPercentage = new List<string>();
 
@@ -118,7 +121,7 @@ namespace verificable.Controllers
                     }
                 }
 
-                //Calcula cual es el porcentaje que se le da a cada adquiriente
+                //Calcula cual es el porcentaje que se le da a cada adquiriente.
                 float percentagePerAdq = ((float)(100 - porcentajeDerechoAdq))/adqWithoutPercentage.Count;
 
                 Console.WriteLine("perxentage: " + percentagePerAdq);
@@ -137,6 +140,7 @@ namespace verificable.Controllers
                     {
                         noAcreditado = true;
                     }
+                    Console.WriteLine("num enaj interno:", numEnajenantes);
                     _context.Add(new Enajenante { RunRut = runRut, PorcentajeDerecho = (double?)porcentajeDerecho, NoAcreditado = (bool?)noAcreditado, NumAtencion = formulario.NumAtencion });
                 }
 
