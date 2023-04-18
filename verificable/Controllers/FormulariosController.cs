@@ -121,7 +121,7 @@ namespace verificable.Controllers
                 //Calcula cual es el porcentaje que se le da a cada adquiriente
                 float percentagePerAdq = ((float)(100 - porcentajeDerechoAdq))/adqWithoutPercentage.Count;
 
-                
+                Console.WriteLine("perxentage: " + percentagePerAdq);
 
                 for (int i = 0; i < numEnajenantes; i++)
                 {
@@ -153,7 +153,7 @@ namespace verificable.Controllers
                     if (checkboxValue == "on" || checkboxValue == "true")
                     {
                         noAcreditado = true;
-                        porcentajeDerecho = 0;
+                        porcentajeDerecho = (decimal?)percentagePerAdq;
                     }
                     _context.Add(new Adquirente { RunRut = runRut, PorcentajeDerecho = (double?)porcentajeDerecho, NoAcreditado = (bool?)noAcreditado, NumAtencion = formulario.NumAtencion });
                     if (formulario.Cne == "Regularizacion De Patrimonio")
