@@ -124,8 +124,6 @@ namespace verificable.Controllers
                 //Calcula cual es el porcentaje que se le da a cada adquiriente.
                 float percentagePerAdq = ((float)(100 - porcentajeDerechoAdq))/adqWithoutPercentage.Count;
 
-                Console.WriteLine("perxentage: " + percentagePerAdq);
-
                 for (int i = 0; i < numEnajenantes; i++)
                 {
                     string runRut = Request.Form["enajenantes[" + i + "].run_rut"];
