@@ -4,6 +4,7 @@
 #SQL QUERY
 ´´´
 CREATE DATABASE BBDDVerificable
+
 USE BBDDVerificable
 GO
 
