@@ -64,7 +64,6 @@
                                 <input type="checkbox" step="0.01" name="enajenantes[0].no_acreditado" required/>
                             </td>
                             <td>
-                                <button type="button" class="btn btn-danger" onclick="removeEnajenantes(this)">Remove</button>
                             </td>
                             
                         </tr>
@@ -99,7 +98,6 @@
                                 <input type="checkbox" step="0.01" name="adquirentes[0].no_acreditado" required/>
                             </td>
                             <td>
-                                <button type="button" class="btn btn-danger" onclick="removeAdquirente(this)">Remove</button>
                             </td>
                         </tr>
                     </tbody>
@@ -263,7 +261,6 @@
                 const inputNoAcreditado = pair.querySelector('input[name*="no_acreditado"]');
 
                 inputPorcentaje.addEventListener('input', () => {
-                    console.log("CLickeado porcentaje");
                     if (inputPorcentaje.value.length !== 0) 
                     {
                         inputNoAcreditado.disabled = true;
@@ -275,7 +272,6 @@
                 });
 
                 inputNoAcreditado.addEventListener('change', () => {
-                    console.log("CLickeado no acreditado");
                     if (inputNoAcreditado.checked) 
                     {
                         inputPorcentaje.disabled = true;
@@ -293,7 +289,6 @@
         });
 
         function validatePorcentajeDerecho() {
-
             //Obtiene todos los elementos que comienzan con enajenante y terminan con porcentaje_derecho.
             var porcentajesEnajenantes = document.querySelectorAll('[name^="enajenantes"][name$="porcentaje_derecho"]');
             var porcentajesAdquirentes = document.querySelectorAll('[name^="adquirentes"][name$="porcentaje_derecho"]');
@@ -302,22 +297,18 @@
 
             for (var i = 0; i < porcentajesEnajenantes.length; i++) 
             {
-
                 if (porcentajesEnajenantes[i].value.lenth !== 0) 
                 {
                     totalPorcentajeEnajenantes += parseFloat(porcentajesEnajenantes[i].value);
                 }
-                
             }
 
             for (var i = 0; i < porcentajesAdquirentes.length; i++) 
             {
-
                 if (porcentajesAdquirentes[i].value.length !== 0) 
                 {
                     totalPorcentajeAdquirentes += parseFloat(porcentajesAdquirentes[i].value);
                 }
-
             }
 
             if (totalPorcentajeEnajenantes > 100) 
