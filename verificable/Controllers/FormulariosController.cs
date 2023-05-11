@@ -16,7 +16,7 @@ namespace verificable.Controllers
     public class FormulariosController : Controller
     {
         private readonly BbddverificableContext _context;
-
+        const int MIN_YEAR = 2019;
         public FormulariosController(BbddverificableContext context)
         {
             _context = context;
@@ -162,9 +162,9 @@ namespace verificable.Controllers
                     {
                         DateTime fechaInscripcion = (DateTime)formulario.FechaInscripcion;
 
-                        if (fechaInscripcion.Year < 2019)
+                        if (fechaInscripcion.Year < MIN_YEAR)
                         {
-                            fechaInscripcion = new DateTime(2019, 1, 1);
+                            fechaInscripcion = new DateTime(MIN_YEAR, 1, 1);
                         }
                         _context.Add(new Multipropietario
                         {
