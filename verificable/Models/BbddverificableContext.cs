@@ -108,6 +108,10 @@ public partial class BbddverificableContext : DbContext
             entity.ToTable("multipropietarios");
 
             entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Cne)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("cne");
             entity.Property(e => e.Comuna)
                 .HasMaxLength(50)
                 .IsUnicode(false)
@@ -130,12 +134,8 @@ public partial class BbddverificableContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("run_rut");
-            entity.Property(e => e.VigenciaFinal)
-                .HasColumnType("date")
-                .HasColumnName("vigencia_final");
-            entity.Property(e => e.VigenciaInicial)
-                .HasColumnType("date")
-                .HasColumnName("vigencia_inicial");
+            entity.Property(e => e.VigenciaFinal).HasColumnName("vigencia_final");
+            entity.Property(e => e.VigenciaInicial).HasColumnName("vigencia_inicial");
         });
 
         modelBuilder.Entity<Comuna>(entity =>

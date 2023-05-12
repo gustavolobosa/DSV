@@ -138,8 +138,30 @@ namespace verificable.Controllers
                     {
                         noAcreditado = true;
                     }
-                    Console.WriteLine("num enaj interno:", numEnajenantes);
                     _context.Add(new Enajenante { RunRut = runRut, PorcentajeDerecho = (double?)porcentajeDerecho, NoAcreditado = (bool?)noAcreditado, NumAtencion = formulario.NumAtencion });
+
+                    DateTime fechaInscripcion = (DateTime)formulario.FechaInscripcion;
+                    if (fechaInscripcion.Year < MIN_YEAR)
+                    {
+                        fechaInscripcion = new DateTime(MIN_YEAR, 1, 1);
+                    }
+                    _context.Add(new Multipropietario
+                    {
+                        Cne = formulario.Cne,
+                        Comuna = formulario.Comuna,
+                        Manzana = formulario.Manzana,
+                        Predio = formulario.Predio,
+                        RunRut = runRut,
+                        PorcentajeDerecho = (double?)porcentajeDerecho,
+                        Fojas = formulario.Fojas,
+                        FechaInscripcion = formulario.FechaInscripcion,
+                        NumInscripcion = formulario.NumInscripcion,
+                        VigenciaInicial = fechaInscripcion.Year
+                    });
+                    if (!ComunaExists(formulario.Comuna))
+                    {
+                        _context.Add(new Comuna { Nombre = formulario.Comuna });
+                    }
                 }
 
                 for (int i = 0; i < numAdquirentes; i++)
@@ -158,32 +180,29 @@ namespace verificable.Controllers
                         porcentajeDerecho = (decimal?)percentagePerAdq;
                     }
                     _context.Add(new Adquirente { RunRut = runRut, PorcentajeDerecho = (double?)porcentajeDerecho, NoAcreditado = (bool?)noAcreditado, NumAtencion = formulario.NumAtencion });
-                    if (formulario.Cne == "Regularizacion De Patrimonio")
+                    
+                    DateTime fechaInscripcion = (DateTime)formulario.FechaInscripcion;
+                    if (fechaInscripcion.Year < MIN_YEAR)
                     {
-                        DateTime fechaInscripcion = (DateTime)formulario.FechaInscripcion;
-
-                        if (fechaInscripcion.Year < MIN_YEAR)
-                        {
-                            fechaInscripcion = new DateTime(MIN_YEAR, 1, 1);
-                        }
-                        _context.Add(new Multipropietario
-                        {
-                            Comuna = formulario.Comuna,
-                            Manzana = formulario.Manzana,
-                            Predio = formulario.Predio,                     
-                            RunRut = runRut,
-                            PorcentajeDerecho = (double?)porcentajeDerecho,
-                            Fojas = formulario.Fojas,
-                            FechaInscripcion = formulario.FechaInscripcion,
-                            NumInscripcion = formulario.NumInscripcion,
-                            VigenciaInicial = fechaInscripcion
-                        });
-                        if (!ComunaExists(formulario.Comuna))
-                        {
-                            _context.Add(new Comuna { Nombre = formulario.Comuna });
-                        }
-                        
-                    }  
+                        fechaInscripcion = new DateTime(MIN_YEAR, 1, 1);
+                    }
+                    _context.Add(new Multipropietario
+                    {
+                        Cne = formulario.Cne,
+                        Comuna = formulario.Comuna,
+                        Manzana = formulario.Manzana,
+                        Predio = formulario.Predio,                     
+                        RunRut = runRut,
+                        PorcentajeDerecho = (double?)porcentajeDerecho,
+                        Fojas = formulario.Fojas,
+                        FechaInscripcion = formulario.FechaInscripcion,
+                        NumInscripcion = formulario.NumInscripcion,
+                        VigenciaInicial = fechaInscripcion.Year
+                    });
+                    if (!ComunaExists(formulario.Comuna))
+                    {
+                        _context.Add(new Comuna { Nombre = formulario.Comuna });
+                    }   
                 }
 
                 // Guarda los cambios en la base de datos

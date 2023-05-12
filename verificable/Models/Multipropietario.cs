@@ -6,6 +6,7 @@ namespace verificable.Models;
 public partial class Multipropietario
 {
     public int Id { get; set; }
+    public string? Cne { get; set; }
 
     public string Comuna { get; set; } = null!;
 
@@ -23,7 +24,7 @@ public partial class Multipropietario
 
     public int? NumInscripcion { get; set; }
 
-    public DateTime? VigenciaInicial { get; set; }
+    public int? VigenciaInicial { get; set; }
 
-    public DateTime? VigenciaFinal { get; set; }
+    public int? VigenciaFinal { get; set; }
 }

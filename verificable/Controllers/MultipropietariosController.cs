@@ -20,26 +20,30 @@ namespace verificable.Controllers
         {
             _context = context;
             
-            var multipropietarios = _context.Multipropietarios.ToList();
+            var multipropietarios = _context.Multipropietarios.OrderBy(obj => obj.VigenciaInicial).ToList();
+            cleanFinalDates(multipropietarios);
             foreach (var multipropietario in multipropietarios)
             {
+                Console.WriteLine("@@@@@@@@@@@@@@@@@@@@@@@@@");
+                Console.WriteLine($"{multipropietario.Comuna}, {multipropietario.Manzana}, {multipropietario.Predio}, {multipropietario.VigenciaInicial}");
                 var comuna = multipropietario.Comuna;
                 var manzana = multipropietario.Manzana;
                 var predio = multipropietario.Predio;
                 var fecha = multipropietario.FechaInscripcion;
-                var fechaYear = multipropietario.FechaInscripcion.Value.Year;
+                var initialYear = multipropietario.VigenciaInicial;
+                var finalYear = initialYear - 1;
                 var numInscripcion = multipropietario.NumInscripcion;
 
                 foreach(var comparison in multipropietarios)
                 {
                     bool samePlace = comparison.Comuna == comuna && comparison.Manzana == manzana && comparison.Predio == predio;
-                    bool minorDate = comparison.FechaInscripcion.Value.Year < fechaYear && comparison.VigenciaFinal == null;
-                    bool sameDate = comparison.FechaInscripcion.Value.Year == fechaYear;
-                    bool mayorDate = comparison.FechaInscripcion.Value.Year > fechaYear && comparison.VigenciaFinal != null;
+                    bool minorDate = comparison.VigenciaInicial < initialYear && comparison.VigenciaFinal == null;
+                    bool sameDate = comparison.VigenciaInicial == initialYear;
+                    bool mayorDate = comparison.VigenciaInicial > initialYear && comparison.VigenciaFinal != null;
 
                     if (samePlace && minorDate)
                     {
-                        comparison.VigenciaFinal = fecha;
+                        comparison.VigenciaFinal = finalYear;
                     }
                     else if (samePlace && sameDate)
                     {
@@ -55,7 +59,7 @@ namespace verificable.Controllers
                     }
                     else if (samePlace && mayorDate)
                     {
-                        _context.Remove(multipropietario);
+                        multipropietario.VigenciaFinal = comparison.VigenciaInicial - 1;
 
                     }
                 }
@@ -82,6 +86,7 @@ namespace verificable.Controllers
                     && m.Manzana.Contains(manzana)
                     && m.Predio.Contains(predio)
                     && m.FechaInscripcion.Value.Year <= year)
+                    .OrderBy(obj => obj.VigenciaInicial)
                     .ToListAsync();
 
                 var MultipropietarioComunaViewModel = new MultipropietarioComunaViewModel
@@ -236,6 +241,14 @@ namespace verificable.Controllers
         private bool MultipropietarioExists(int id)
         {
           return (_context.Multipropietarios?.Any(e => e.Id == id)).GetValueOrDefault();
+        }
+
+        private void cleanFinalDates(List<Multipropietario> multipropietarioList)
+        {
+            foreach (var multipropietario in multipropietarioList)
+            {
+                multipropietario.VigenciaFinal = null;
+            }
         }
     }
 }

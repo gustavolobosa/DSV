@@ -42,6 +42,7 @@ GO
  
 CREATE TABLE multipropietarios (
    id INT PRIMARY KEY IDENTITY(1,1),
+   cne VARCHAR(50) NULL,
    comuna VARCHAR(50) NOT NULL,
    manzana VARCHAR(50) NOT NULL,
    predio VARCHAR(50) NOT NULL,
@@ -50,8 +51,8 @@ CREATE TABLE multipropietarios (
    fojas INT NULL,
    fecha_inscripcion DATE NULL,
    num_inscripcion INT NULL,
-   vigencia_inicial DATE NULL,
-   vigencia_final DATE NULL,
+   vigencia_inicial INT NULL,
+   vigencia_final INT NULL,
 
 );
 GO
