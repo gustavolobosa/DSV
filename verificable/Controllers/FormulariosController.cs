@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using verificable.Models;
 using verificable.ViewModels;
 
@@ -267,10 +268,27 @@ namespace verificable.Controllers
                         Console.WriteLine(ongoing.PorcentajeDerecho);
                     }
 
+                    bool oneEnajenanteAndAdquirente = enajenanteCandidates.Count == 1 && adquirenteCandidates.Count == 1;
+
+
                     if (TotalRightPercentage(adquirenteCandidates) == 100)
                     {
                         TotalTransferCase(formulario.Comuna, formulario.Manzana, formulario.Predio);
                     } 
+
+                    else if (oneEnajenanteAndAdquirente)
+                    {
+                        Console.WriteLine("One Enajenante and Adquirente");
+                        
+                        List<Multipropietario> multipropietariosToAdd = OneAdquirenteAndEnajenanteCase(adquirenteCandidates, enajenanteCandidates, ongoingMultipropietarios, formulario);
+
+                        Console.WriteLine("Fuera");
+                        foreach(var multi in multipropietariosToAdd)
+                        {
+                            Console.WriteLine("rut: {0}", multi.RunRut);
+                            Console.WriteLine("%: {0}", multi.PorcentajeDerecho);
+                        }
+                    }
                     /*_context.Add(new Multipropietario
                     {
                         Cne = formulario.Cne,
@@ -284,6 +302,8 @@ namespace verificable.Controllers
                         NumInscripcion = formulario.NumInscripcion,
                         VigenciaInicial = fechaInscripcion.Year
                     });*/
+
+                    
                 }
                 
                 enajenanteCandidates.Clear();
@@ -422,7 +442,74 @@ namespace verificable.Controllers
             return percentageCount;
         }
 
-        private List<Multipropietario> GetOngoingMultipropietarios(string comuna, string manzana, string predio)
+
+        public List<Multipropietario> OneAdquirenteAndEnajenanteCase(List<Adquirente> adquirenteCandidates, List<Enajenante> enajenanteCandidates, List<Multipropietario> multipropietarios, Formulario formulario)
+        {
+            List<Multipropietario> potentialMultipropietarios = new List<Multipropietario>();
+            Adquirente adquirente = adquirenteCandidates[0];
+            Enajenante enajenante = enajenanteCandidates[0];
+            double? originalPercentage = 0;
+
+
+
+            Console.WriteLine("adquirenteR: {0}", adquirente.RunRut);
+            Console.WriteLine("enajenanteR: {0}", enajenante.RunRut);
+            Console.WriteLine("adquirente%: {0}", adquirente.PorcentajeDerecho);
+            Console.WriteLine("enajenante%: {0}", enajenante.PorcentajeDerecho);
+
+            foreach (var multipropietario in multipropietarios)
+            {
+                if(multipropietario.RunRut == enajenante.RunRut)
+                {
+                    originalPercentage = multipropietario.PorcentajeDerecho;
+                }
+            }
+
+            double? percetnageToChange = (originalPercentage) * (enajenante.PorcentajeDerecho) / 100;
+
+            Console.WriteLine("originalPercentage: {0}", originalPercentage);
+            Console.WriteLine("percetnageToChange: {0}", percetnageToChange);
+
+            adquirente.PorcentajeDerecho = percetnageToChange;
+            enajenante.PorcentajeDerecho = originalPercentage - percetnageToChange;
+
+            Console.WriteLine("adquirente.PorcentajeDerecho: {0}", adquirente.PorcentajeDerecho);
+            Console.WriteLine("enajentante.PorcentajeDerecho: {0}", enajenante.PorcentajeDerecho);
+
+            potentialMultipropietarios.Add(new Multipropietario
+                {
+                    Cne = formulario.Cne,
+                    Comuna = formulario.Comuna,
+                    Manzana = formulario.Manzana,
+                    Predio = formulario.Predio,
+                    RunRut = enajenante.RunRut,
+                    PorcentajeDerecho = enajenante.PorcentajeDerecho,
+                    Fojas = formulario.Fojas,
+                    FechaInscripcion = formulario.FechaInscripcion,
+                    NumInscripcion = formulario.NumInscripcion,
+                    VigenciaInicial = 2019 //CAMBAIR ESTOOOOOOOOOOOOO
+                }      
+            );
+            potentialMultipropietarios.Add(new Multipropietario
+            {
+                Cne = formulario.Cne,
+                Comuna = formulario.Comuna,
+                Manzana = formulario.Manzana,
+                Predio = formulario.Predio,
+                RunRut = adquirente.RunRut,
+                PorcentajeDerecho = adquirente.PorcentajeDerecho,
+                Fojas = formulario.Fojas,
+                FechaInscripcion = formulario.FechaInscripcion,
+                NumInscripcion = formulario.NumInscripcion,
+                VigenciaInicial = 2019 //CAMBAIR ESTOOOOOOOOOOOOO
+            }
+            );
+            
+
+            return potentialMultipropietarios;
+        }
+
+        public List<Multipropietario> GetOngoingMultipropietarios(string comuna, string manzana, string predio)
         {
             List<Multipropietario> ongoingMultipropietarios = new List<Multipropietario>();
             foreach (var multipropietario in _context.Multipropietarios)
@@ -438,7 +525,7 @@ namespace verificable.Controllers
             return ongoingMultipropietarios;
         }
 
-        private List<Enajenante> GetEnajenanteCantidates(int numEnajenantes, Formulario formulario, float percentagePerEna)
+        public List<Enajenante> GetEnajenanteCantidates(int numEnajenantes, Formulario formulario, float percentagePerEna)
         {
             List<Enajenante> enajenanteCandidates = new List<Enajenante>();
             for (var num = 0; num < numEnajenantes;  num++)
@@ -467,7 +554,7 @@ namespace verificable.Controllers
             return enajenanteCandidates;
         }
 
-        private List<Adquirente> GetAdquirienteCantidates(int numAdquirientes, Formulario formulario, float percentagePerAdq)
+        public List<Adquirente> GetAdquirienteCantidates(int numAdquirientes, Formulario formulario, float percentagePerAdq)
         {
             List<Adquirente> adquirienteCandidates = new List<Adquirente>();
             for (var num = 0; num < numAdquirientes; num++)
