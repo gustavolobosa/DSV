@@ -24,8 +24,6 @@ namespace verificable.Controllers
             cleanFinalDates(multipropietarios);
             foreach (var multipropietario in multipropietarios)
             {
-                Console.WriteLine("@@@@@@@@@@@@@@@@@@@@@@@@@");
-                Console.WriteLine($"{multipropietario.Comuna}, {multipropietario.Manzana}, {multipropietario.Predio}, {multipropietario.VigenciaInicial}");
                 var comuna = multipropietario.Comuna;
                 var manzana = multipropietario.Manzana;
                 var predio = multipropietario.Predio;

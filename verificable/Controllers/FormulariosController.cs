@@ -72,6 +72,8 @@ namespace verificable.Controllers
 
         public async Task<IActionResult> Create([Bind("NumAtencion,Cne,Comuna,Manzana,Predio,Fojas,FechaInscripcion,NumInscripcion")] Formulario formulario)
         {
+            List<Adquirente> adquirenteCandidates = new List<Adquirente>();
+            List<Enajenante> enajenanteCandidates = new List<Enajenante>();
             if (ModelState.IsValid)
             {
                 _context.Add(formulario);
@@ -100,52 +102,176 @@ namespace verificable.Controllers
                         numAdquirentes++;
                     }
                 }
-
-                //El siguente bloque es para ver a cuales adquirentes les falta un porcentaje y calcular la suma de pocentajes total.
-                decimal? porcentajeDerechoAdq = 0;
-                List<string> adqWithoutPercentage = new List<string>();
-
-                for (int i = 0; i < numAdquirentes; i++)
+                if (formulario.Cne == "Regularizacion De Patrimonio")
                 {
-                    string runRutAdqToValidatePercentage = Request.Form["adquirentes[" + i + "].run_rut"];
-                    
-                    if (!string.IsNullOrEmpty(Request.Form["adquirentes[" + i + "].porcentaje_derecho"]))
+                    //El siguente bloque es para ver a cuales adquirentes les falta un porcentaje y calcular la suma de pocentajes total.
+                    decimal? porcentajeDerechoAdq = 0;
+                    List<string> adqWithoutPercentage = new List<string>();
+
+                    for (int i = 0; i < numAdquirentes; i++)
                     {
-                        porcentajeDerechoAdq += decimal.Parse(Request.Form["adquirentes[" + i + "].porcentaje_derecho"]);
+                        string runRutAdqToValidatePercentage = Request.Form["adquirentes[" + i + "].run_rut"];
+
+                        if (!string.IsNullOrEmpty(Request.Form["adquirentes[" + i + "].porcentaje_derecho"]))
+                        {
+                            porcentajeDerechoAdq += decimal.Parse(Request.Form["adquirentes[" + i + "].porcentaje_derecho"]);
+                        }
+
+                        string checkboxValueAdq = Request.Form["adquirentes[" + i + "].no_acreditado"].ToString().ToLower();
+                        if (checkboxValueAdq == "on" || checkboxValueAdq == "true")
+                        {
+                            adqWithoutPercentage.Add(runRutAdqToValidatePercentage);
+                        }
                     }
 
-                    string checkboxValueAdq = Request.Form["adquirentes[" + i + "].no_acreditado"].ToString().ToLower();
-                    if (checkboxValueAdq == "on" || checkboxValueAdq == "true")
+                    //Calcula cual es el porcentaje que se le da a cada adquiriente.
+                    float percentagePerAdq = ((float)(100 - porcentajeDerechoAdq)) / adqWithoutPercentage.Count;
+
+                    for (int i = 0; i < numAdquirentes; i++)
                     {
-                        adqWithoutPercentage.Add(runRutAdqToValidatePercentage);
+                        string runRut = Request.Form["adquirentes[" + i + "].run_rut"];
+                        decimal? porcentajeDerecho = null;
+                        if (!string.IsNullOrEmpty(Request.Form["adquirentes[" + i + "].porcentaje_derecho"]))
+                        {
+                            porcentajeDerecho = decimal.Parse(Request.Form["adquirentes[" + i + "].porcentaje_derecho"]);
+                        }
+                        bool noAcreditado = false;
+                        string checkboxValue = Request.Form["adquirentes[" + i + "].no_acreditado"].ToString().ToLower();
+                        if (checkboxValue == "on" || checkboxValue == "true")
+                        {
+                            noAcreditado = true;
+                            porcentajeDerecho = (decimal?)percentagePerAdq;
+                        }
+                        _context.Add(new Adquirente { RunRut = runRut, PorcentajeDerecho = (double?)porcentajeDerecho, NoAcreditado = (bool?)noAcreditado, NumAtencion = formulario.NumAtencion });
+
+                        DateTime fechaInscripcion = (DateTime)formulario.FechaInscripcion;
+                        if (fechaInscripcion.Year < MIN_YEAR)
+                        {
+                            fechaInscripcion = new DateTime(MIN_YEAR, 1, 1);
+                        }
+                        _context.Add(new Multipropietario
+                        {
+                            Cne = formulario.Cne,
+                            Comuna = formulario.Comuna,
+                            Manzana = formulario.Manzana,
+                            Predio = formulario.Predio,
+                            RunRut = runRut,
+                            PorcentajeDerecho = (double?)porcentajeDerecho,
+                            Fojas = formulario.Fojas,
+                            FechaInscripcion = formulario.FechaInscripcion,
+                            NumInscripcion = formulario.NumInscripcion,
+                            VigenciaInicial = fechaInscripcion.Year
+                        });
+                        if (!ComunaExists(formulario.Comuna))
+                        {
+                            _context.Add(new Comuna { Nombre = formulario.Comuna });
+                        }
                     }
                 }
-
-                //Calcula cual es el porcentaje que se le da a cada adquiriente.
-                float percentagePerAdq = ((float)(100 - porcentajeDerechoAdq))/adqWithoutPercentage.Count;
-
-                for (int i = 0; i < numEnajenantes; i++)
+                else if (formulario.Cne == "Compraventa") 
                 {
-                    string runRut = Request.Form["enajenantes[" + i + "].run_rut"];
-                    decimal? porcentajeDerecho = null;
-                    if (!string.IsNullOrEmpty(Request.Form["enajenantes[" + i + "].porcentaje_derecho"]))
-                    {
-                        porcentajeDerecho = decimal.Parse(Request.Form["enajenantes[" + i + "].porcentaje_derecho"]);
-                    }
-                    bool noAcreditado = false;
-                    string checkboxValue = Request.Form["enajenantes[" + i + "].no_acreditado"].ToString().ToLower();
-                    if (checkboxValue == "on" || checkboxValue == "true")
-                    {
-                        noAcreditado = true;
-                    }
-                    _context.Add(new Enajenante { RunRut = runRut, PorcentajeDerecho = (double?)porcentajeDerecho, NoAcreditado = (bool?)noAcreditado, NumAtencion = formulario.NumAtencion });
+                    //El siguente bloque es para ver a cuales adquirentes les falta un porcentaje y calcular la suma de pocentajes total.
+                    decimal? porcentajeDerechoAdq = 0;
+                    decimal? porcentajeDerechoEna = 0;
+                    List<string> adqWithoutPercentage = new List<string>();
+                    List<string> enaWithoutPercentage = new List<string>();
 
-                    DateTime fechaInscripcion = (DateTime)formulario.FechaInscripcion;
-                    if (fechaInscripcion.Year < MIN_YEAR)
+                    for (int i = 0; i < numAdquirentes; i++)
                     {
-                        fechaInscripcion = new DateTime(MIN_YEAR, 1, 1);
+                        string runRutAdqToValidatePercentage = Request.Form["adquirentes[" + i + "].run_rut"];
+
+                        if (!string.IsNullOrEmpty(Request.Form["adquirentes[" + i + "].porcentaje_derecho"]))
+                        {
+                            porcentajeDerechoAdq += decimal.Parse(Request.Form["adquirentes[" + i + "].porcentaje_derecho"]);
+                        }
+
+                        string checkboxValueAdq = Request.Form["adquirentes[" + i + "].no_acreditado"].ToString().ToLower();
+                        if (checkboxValueAdq == "on" || checkboxValueAdq == "true")
+                        {
+                            adqWithoutPercentage.Add(runRutAdqToValidatePercentage);
+                        }
                     }
-                    _context.Add(new Multipropietario
+
+                    for (int i = 0; i < numEnajenantes; i++)
+                    {
+                        string runRutEnaToValidatePercentage = Request.Form["enajenantes[" + i + "].run_rut"];
+
+                        if (!string.IsNullOrEmpty(Request.Form["enajenantes[" + i + "].porcentaje_derecho"]))
+                        {
+                            porcentajeDerechoEna += decimal.Parse(Request.Form["enajenantes[" + i + "].porcentaje_derecho"]);
+                        }
+
+                        string checkboxValueEna = Request.Form["enajenantes[" + i + "].no_acreditado"].ToString().ToLower();
+                        if (checkboxValueEna == "on" || checkboxValueEna == "true")
+                        {
+                            enaWithoutPercentage.Add(runRutEnaToValidatePercentage);
+                        }
+                    }
+                    //Calcula cual es el porcentaje que se le da a cada adquiriente y enajenante.
+                    float percentagePerAdq = ((float)(100 - porcentajeDerechoAdq)) / adqWithoutPercentage.Count;
+                    float percentagePerEna = ((float)(100 - porcentajeDerechoEna)) / enaWithoutPercentage.Count;
+
+                    enajenanteCandidates = GetEnajenanteCantidates(numEnajenantes, formulario, percentagePerEna);
+                    foreach (var enajenante in enajenanteCandidates)
+                    {
+                        _context.Add(new Enajenante { 
+                            RunRut = enajenante.RunRut, 
+                            PorcentajeDerecho = (double?)enajenante.PorcentajeDerecho, 
+                            NoAcreditado = (bool?)enajenante.NoAcreditado, 
+                            NumAtencion = formulario.NumAtencion 
+                        });
+
+                        DateTime fechaInscripcion = (DateTime)formulario.FechaInscripcion;
+                        if (fechaInscripcion.Year < MIN_YEAR)
+                        {
+                            fechaInscripcion = new DateTime(MIN_YEAR, 1, 1);
+                        } 
+                    }
+                    adquirenteCandidates = GetAdquirienteCantidates(numAdquirentes, formulario, percentagePerAdq);
+                    foreach (var adquiriente in adquirenteCandidates)
+                    {
+                        _context.Add(new Adquirente 
+                        {
+                            RunRut = adquiriente.RunRut, 
+                            PorcentajeDerecho = (double?)adquiriente.PorcentajeDerecho, 
+                            NoAcreditado = (bool?)adquiriente.NoAcreditado, 
+                            NumAtencion = formulario.NumAtencion 
+                        });
+
+                        DateTime fechaInscripcion = (DateTime)formulario.FechaInscripcion;
+                        if (fechaInscripcion.Year < MIN_YEAR)
+                        {
+                            fechaInscripcion = new DateTime(MIN_YEAR, 1, 1);
+                        }
+                    }
+                    Console.WriteLine("Enajenantes Candidates: ");
+                    foreach (var enajenante in enajenanteCandidates)
+                    {
+                        Console.WriteLine(enajenante.RunRut, enajenante.PorcentajeDerecho);
+                    }
+                    Console.WriteLine("Adquirientes Candidates: ");
+                    foreach (var adquiriente in adquirenteCandidates)
+                    {
+                        Console.WriteLine(adquiriente.RunRut, adquiriente.PorcentajeDerecho);
+                    }
+                    
+                    Console.WriteLine("Informacion del formulario: ");
+                    Console.WriteLine(formulario.Comuna);
+                    Console.WriteLine(formulario.Manzana);
+                    Console.WriteLine(formulario.Predio);
+                    Console.WriteLine("Last Multipropietarios Related: ");
+                    List<Multipropietario> ongoingMultipropietarios = GetOngoingMultipropietarios(formulario.Comuna, formulario.Manzana, formulario.Predio);
+                    foreach (var ongoing in ongoingMultipropietarios)
+                    {
+                        Console.WriteLine(ongoing.RunRut);
+                        Console.WriteLine(ongoing.PorcentajeDerecho);
+                    }
+
+                    if (TotalRightPercentage(adquirenteCandidates) == 100)
+                    {
+                        TotalTransferCase(formulario.Comuna, formulario.Manzana, formulario.Predio);
+                    } 
+                    /*_context.Add(new Multipropietario
                     {
                         Cne = formulario.Cne,
                         Comuna = formulario.Comuna,
@@ -157,54 +283,11 @@ namespace verificable.Controllers
                         FechaInscripcion = formulario.FechaInscripcion,
                         NumInscripcion = formulario.NumInscripcion,
                         VigenciaInicial = fechaInscripcion.Year
-                    });
-                    if (!ComunaExists(formulario.Comuna))
-                    {
-                        _context.Add(new Comuna { Nombre = formulario.Comuna });
-                    }
+                    });*/
                 }
-
-                for (int i = 0; i < numAdquirentes; i++)
-                {
-                    string runRut = Request.Form["adquirentes[" + i + "].run_rut"];
-                    decimal? porcentajeDerecho = null;
-                    if (!string.IsNullOrEmpty(Request.Form["adquirentes[" + i + "].porcentaje_derecho"]))
-                    {
-                        porcentajeDerecho = decimal.Parse(Request.Form["adquirentes[" + i + "].porcentaje_derecho"]);
-                    }
-                    bool noAcreditado = false;
-                    string checkboxValue = Request.Form["adquirentes[" + i + "].no_acreditado"].ToString().ToLower();
-                    if (checkboxValue == "on" || checkboxValue == "true")
-                    {
-                        noAcreditado = true;
-                        porcentajeDerecho = (decimal?)percentagePerAdq;
-                    }
-                    _context.Add(new Adquirente { RunRut = runRut, PorcentajeDerecho = (double?)porcentajeDerecho, NoAcreditado = (bool?)noAcreditado, NumAtencion = formulario.NumAtencion });
-                    
-                    DateTime fechaInscripcion = (DateTime)formulario.FechaInscripcion;
-                    if (fechaInscripcion.Year < MIN_YEAR)
-                    {
-                        fechaInscripcion = new DateTime(MIN_YEAR, 1, 1);
-                    }
-                    _context.Add(new Multipropietario
-                    {
-                        Cne = formulario.Cne,
-                        Comuna = formulario.Comuna,
-                        Manzana = formulario.Manzana,
-                        Predio = formulario.Predio,                     
-                        RunRut = runRut,
-                        PorcentajeDerecho = (double?)porcentajeDerecho,
-                        Fojas = formulario.Fojas,
-                        FechaInscripcion = formulario.FechaInscripcion,
-                        NumInscripcion = formulario.NumInscripcion,
-                        VigenciaInicial = fechaInscripcion.Year
-                    });
-                    if (!ComunaExists(formulario.Comuna))
-                    {
-                        _context.Add(new Comuna { Nombre = formulario.Comuna });
-                    }   
-                }
-
+                
+                enajenanteCandidates.Clear();
+                adquirenteCandidates.Clear();
                 // Guarda los cambios en la base de datos
                 await _context.SaveChangesAsync();
 
@@ -321,6 +404,96 @@ namespace verificable.Controllers
         public bool ComunaExists(string nombre)
         {
             return _context.Comunas.Any(e => e.Nombre == nombre);
+        }
+        private void TotalTransferCase(string comuna, string manzana, string predio)
+        {
+            List<Multipropietario> multipropietariosToCompare = GetOngoingMultipropietarios(comuna, manzana, predio);
+            _context.Multipropietarios.OrderBy(obj => obj.VigenciaInicial).ThenBy(obj => obj.NumInscripcion);
+            //Search for the previous information about the multipropietarios
+            //Asign values for this cacse, save data in multipropietrios
+        }
+        private double? TotalRightPercentage(List<Adquirente> compraventaAdquirientes)
+        {
+            double? percentageCount = 0;
+            foreach (var adquiriente in compraventaAdquirientes)
+            {
+                percentageCount += adquiriente.PorcentajeDerecho;
+            }
+            return percentageCount;
+        }
+
+        private List<Multipropietario> GetOngoingMultipropietarios(string comuna, string manzana, string predio)
+        {
+            List<Multipropietario> ongoingMultipropietarios = new List<Multipropietario>();
+            foreach (var multipropietario in _context.Multipropietarios)
+            {
+                bool targetIdentifier = multipropietario.Comuna == comuna && multipropietario.Manzana == manzana &&
+                                        multipropietario.Predio == predio;
+                if (multipropietario.VigenciaFinal == null && targetIdentifier)
+                {
+                    ongoingMultipropietarios.Add(multipropietario);
+                }
+                
+            }
+            return ongoingMultipropietarios;
+        }
+
+        private List<Enajenante> GetEnajenanteCantidates(int numEnajenantes, Formulario formulario, float percentagePerEna)
+        {
+            List<Enajenante> enajenanteCandidates = new List<Enajenante>();
+            for (var num = 0; num < numEnajenantes;  num++)
+            {
+                string runRut = Request.Form["enajenantes[" + num + "].run_rut"];
+                decimal? porcentajeDerecho = null;
+                if (!string.IsNullOrEmpty(Request.Form["enajenantes[" + num + "].porcentaje_derecho"]))
+                {
+                    porcentajeDerecho = decimal.Parse(Request.Form["enajenantes[" + num + "].porcentaje_derecho"]);
+                }
+                bool noAcreditado = false;
+                string checkboxValue = Request.Form["enajenantes[" + num + "].no_acreditado"].ToString().ToLower();
+                if (checkboxValue == "on" || checkboxValue == "true")
+                {
+                    noAcreditado = true;
+                    porcentajeDerecho = (decimal?)percentagePerEna;
+                }
+                enajenanteCandidates.Add(new Enajenante
+                {
+                    RunRut = runRut,
+                    PorcentajeDerecho = (double?)porcentajeDerecho,
+                    NoAcreditado = (bool?)noAcreditado,
+                    NumAtencion = formulario.NumAtencion
+                });
+            }
+            return enajenanteCandidates;
+        }
+
+        private List<Adquirente> GetAdquirienteCantidates(int numAdquirientes, Formulario formulario, float percentagePerAdq)
+        {
+            List<Adquirente> adquirienteCandidates = new List<Adquirente>();
+            for (var num = 0; num < numAdquirientes; num++)
+            {
+                string runRut = Request.Form["adquirentes[" + num + "].run_rut"];
+                decimal? porcentajeDerecho = null;
+                if (!string.IsNullOrEmpty(Request.Form["adquirentes[" + num + "].porcentaje_derecho"]))
+                {
+                    porcentajeDerecho = decimal.Parse(Request.Form["adquirentes[" + num + "].porcentaje_derecho"]);
+                }
+                bool noAcreditado = false;
+                string checkboxValue = Request.Form["adquirentes[" + num + "].no_acreditado"].ToString().ToLower();
+                if (checkboxValue == "on" || checkboxValue == "true")
+                {
+                    noAcreditado = true;
+                    porcentajeDerecho = (decimal?)percentagePerAdq;
+                }
+                adquirienteCandidates.Add(new Adquirente
+                {
+                    RunRut = runRut,
+                    PorcentajeDerecho = (double?)porcentajeDerecho,
+                    NoAcreditado = (bool?)noAcreditado,
+                    NumAtencion = formulario.NumAtencion
+                });
+            }
+            return adquirienteCandidates;
         }
     }
 }
