@@ -18,6 +18,9 @@ namespace verificable.Controllers
     {
         private readonly BbddverificableContext _context;
         const int MIN_YEAR = 2019;
+        const int MIN_MONTH = 1;
+        const int MIN_DAY = 1;
+
         public FormulariosController(BbddverificableContext context)
         {
             _context = context;
@@ -148,7 +151,7 @@ namespace verificable.Controllers
                         DateTime fechaInscripcion = (DateTime)formulario.FechaInscripcion;
                         if (fechaInscripcion.Year < MIN_YEAR)
                         {
-                            fechaInscripcion = new DateTime(MIN_YEAR, 1, 1);
+                            fechaInscripcion = new DateTime(MIN_YEAR, MIN_MONTH, MIN_DAY);
                         }
                         _context.Add(new Multipropietario
                         {
@@ -225,7 +228,7 @@ namespace verificable.Controllers
                         DateTime fechaInscripcion = (DateTime)formulario.FechaInscripcion;
                         if (fechaInscripcion.Year < MIN_YEAR)
                         {
-                            fechaInscripcion = new DateTime(MIN_YEAR, 1, 1);
+                            fechaInscripcion = new DateTime(MIN_YEAR, MIN_MONTH, MIN_DAY);
                         } 
                     }
                     adquirenteCandidates = GetAdquirienteCantidates(numAdquirentes, formulario, percentagePerAdq);
@@ -242,7 +245,7 @@ namespace verificable.Controllers
                         DateTime fechaInscripcion = (DateTime)formulario.FechaInscripcion;
                         if (fechaInscripcion.Year < MIN_YEAR)
                         {
-                            fechaInscripcion = new DateTime(MIN_YEAR, 1, 1);
+                            fechaInscripcion = new DateTime(MIN_YEAR, MIN_MONTH, MIN_DAY);
                         }
                     }
                     Console.WriteLine("Enajenantes Candidates: ");
@@ -462,6 +465,26 @@ namespace verificable.Controllers
                 if(multipropietario.RunRut == enajenante.RunRut)
                 {
                     originalPercentage = multipropietario.PorcentajeDerecho;
+                    Console.WriteLine("RUT: {0}", multipropietario.RunRut);
+                }
+                else
+                {
+                    Console.WriteLine("RUT: {0}", multipropietario.RunRut);
+
+                    potentialMultipropietarios.Add(new Multipropietario
+                        {
+                            Cne = formulario.Cne,
+                            Comuna = formulario.Comuna,
+                            Manzana = formulario.Manzana,
+                            Predio = formulario.Predio,
+                            RunRut = multipropietario.RunRut,
+                            PorcentajeDerecho = multipropietario.PorcentajeDerecho,
+                            Fojas = formulario.Fojas,
+                            FechaInscripcion = formulario.FechaInscripcion,
+                            NumInscripcion = formulario.NumInscripcion,
+                            VigenciaInicial = multipropietario.VigenciaInicial
+                        }
+                    );
                 }
             }
 
