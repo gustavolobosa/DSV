@@ -300,6 +300,15 @@ namespace verificable.Controllers
                     {
                         multipropietariosToAdd = DominioCase(formulario, enajenanteCandidates, adquirenteCandidates);
                     }
+                    double? acumulatedPercentage = 0;
+                    foreach (var multipropietario in multipropietariosToAdd)
+                    {
+                        acumulatedPercentage += multipropietario.PorcentajeDerecho;
+                    }
+                    foreach (var multipropietario in multipropietariosToAdd)
+                    {
+                        multipropietario.PorcentajeDerecho = multipropietario.PorcentajeDerecho * 100 / acumulatedPercentage;
+                    }
                     foreach(var multipropietario in multipropietariosToAdd)
                     {
                         _context.Add(new Multipropietario
@@ -603,7 +612,6 @@ namespace verificable.Controllers
         {
             List<Multipropietario> multipropietariosToCompare = GetOngoingMultipropietarios(formulario.Comuna, formulario.Manzana, formulario.Predio);
             List<Multipropietario> potentialMultipropietarios = new List<Multipropietario>();
-            double? acumulatedPercentage = 0;
             double? auxiliaryRightPercentage = 0;
             foreach (var multipropietario in multipropietariosToCompare)
             {
@@ -634,7 +642,6 @@ namespace verificable.Controllers
                         });
                     }
                 }
-                acumulatedPercentage += multipropietario.PorcentajeDerecho;
                 potentialMultipropietarios.Add(new Multipropietario
                 {
                     Cne = formulario.Cne,
@@ -651,7 +658,6 @@ namespace verificable.Controllers
             }
             foreach(var adquirente in adquirenteCandidates)
             {
-                acumulatedPercentage += adquirente.PorcentajeDerecho;
                 potentialMultipropietarios.Add(new Multipropietario
                 {
                     Cne = formulario.Cne,
@@ -667,10 +673,6 @@ namespace verificable.Controllers
                 });
             }
 
-            foreach(var multipropietario in potentialMultipropietarios)
-            {
-                multipropietario.PorcentajeDerecho = multipropietario.PorcentajeDerecho * 100 / acumulatedPercentage;
-            }
             foreach(var multipropietario in multipropietariosToCompare)
             {
                 if(multipropietario.PorcentajeDerecho == 0)
