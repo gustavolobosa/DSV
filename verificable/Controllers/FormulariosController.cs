@@ -605,7 +605,6 @@ namespace verificable.Controllers
             List<Multipropietario> potentialMultipropietarios = new List<Multipropietario>();
             double? acumulatedPercentage = 0;
             double? auxiliaryRightPercentage = 0;
-            acumulatedPercentage += enajenanteCandidates.First().PorcentajeDerecho;
             foreach (var multipropietario in multipropietariosToCompare)
             {
                 if(multipropietario.RunRut == enajenanteCandidates.First().RunRut)
@@ -652,6 +651,7 @@ namespace verificable.Controllers
             }
             foreach(var adquirente in adquirenteCandidates)
             {
+                acumulatedPercentage += adquirente.PorcentajeDerecho;
                 potentialMultipropietarios.Add(new Multipropietario
                 {
                     Cne = formulario.Cne,
