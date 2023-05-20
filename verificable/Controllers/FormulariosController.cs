@@ -248,49 +248,29 @@ namespace verificable.Controllers
                             fechaInscripcion = new DateTime(MIN_YEAR, MIN_MONTH, MIN_DAY);
                         }
                     }
-                    Console.WriteLine("Enajenantes Candidates: ");
-                    foreach (var enajenante in enajenanteCandidates)
-                    {
-                        Console.WriteLine(enajenante.RunRut, enajenante.PorcentajeDerecho);
-                    }
-                    Console.WriteLine("Adquirientes Candidates: ");
-                    foreach (var adquiriente in adquirenteCandidates)
-                    {
-                        Console.WriteLine(adquiriente.RunRut, adquiriente.PorcentajeDerecho);
-                    }
-                    
-                    Console.WriteLine("Informacion del formulario: ");
-                    Console.WriteLine(formulario.Comuna);
-                    Console.WriteLine(formulario.Manzana);
-                    Console.WriteLine(formulario.Predio);
-                    Console.WriteLine("Last Multipropietarios Related: ");
+
+                    List<Multipropietario> multipropietariosToAdd;
                     List<Multipropietario> ongoingMultipropietarios = GetOngoingMultipropietarios(formulario.Comuna, formulario.Manzana, formulario.Predio);
-                    foreach (var ongoing in ongoingMultipropietarios)
-                    {
-                        Console.WriteLine(ongoing.RunRut);
-                        Console.WriteLine(ongoing.PorcentajeDerecho);
-                    }
 
                     bool oneEnajenanteAndAdquirente = enajenanteCandidates.Count == 1 && adquirenteCandidates.Count == 1;
 
-
+                    // CASO 4
                     if (TotalRightPercentage(adquirenteCandidates) == 100)
                     {
                         TotalTransferCase(formulario.Comuna, formulario.Manzana, formulario.Predio);
                     } 
 
+                    // CASO 5
                     else if (oneEnajenanteAndAdquirente)
-                    {
-                        Console.WriteLine("One Enajenante and Adquirente");
-                        
-                        List<Multipropietario> multipropietariosToAdd = OneAdquirenteAndEnajenanteCase(adquirenteCandidates, enajenanteCandidates, ongoingMultipropietarios, formulario);
+                    {                        
+                        multipropietariosToAdd = OneAdquirenteAndEnajenanteCase(adquirenteCandidates, enajenanteCandidates, ongoingMultipropietarios, formulario);
 
-                        Console.WriteLine("Fuera");
-                        foreach(var multi in multipropietariosToAdd)
-                        {
-                            Console.WriteLine("rut: {0}", multi.RunRut);
-                            Console.WriteLine("%: {0}", multi.PorcentajeDerecho);
-                        }
+                    }
+
+                    // CASO 6
+                    else
+                    {
+                        multipropietariosToAdd = DominiosTransferCase(adquirenteCandidates, enajenanteCandidates, ongoingMultipropietarios, formulario);
                     }
                     /*_context.Add(new Multipropietario
                     {
@@ -453,23 +433,14 @@ namespace verificable.Controllers
             Enajenante enajenante = enajenanteCandidates[0];
             double? originalPercentage = 0;
 
-
-
-            Console.WriteLine("adquirenteR: {0}", adquirente.RunRut);
-            Console.WriteLine("enajenanteR: {0}", enajenante.RunRut);
-            Console.WriteLine("adquirente%: {0}", adquirente.PorcentajeDerecho);
-            Console.WriteLine("enajenante%: {0}", enajenante.PorcentajeDerecho);
-
             foreach (var multipropietario in multipropietarios)
             {
                 if(multipropietario.RunRut == enajenante.RunRut)
                 {
                     originalPercentage = multipropietario.PorcentajeDerecho;
-                    Console.WriteLine("RUT: {0}", multipropietario.RunRut);
                 }
                 else
                 {
-                    Console.WriteLine("RUT: {0}", multipropietario.RunRut);
 
                     potentialMultipropietarios.Add(new Multipropietario
                         {
@@ -490,14 +461,8 @@ namespace verificable.Controllers
 
             double? percetnageToChange = (originalPercentage) * (enajenante.PorcentajeDerecho) / 100;
 
-            Console.WriteLine("originalPercentage: {0}", originalPercentage);
-            Console.WriteLine("percetnageToChange: {0}", percetnageToChange);
-
             adquirente.PorcentajeDerecho = percetnageToChange;
             enajenante.PorcentajeDerecho = originalPercentage - percetnageToChange;
-
-            Console.WriteLine("adquirente.PorcentajeDerecho: {0}", adquirente.PorcentajeDerecho);
-            Console.WriteLine("enajentante.PorcentajeDerecho: {0}", enajenante.PorcentajeDerecho);
 
             potentialMultipropietarios.Add(new Multipropietario
                 {
@@ -510,8 +475,9 @@ namespace verificable.Controllers
                     Fojas = formulario.Fojas,
                     FechaInscripcion = formulario.FechaInscripcion,
                     NumInscripcion = formulario.NumInscripcion,
-                    VigenciaInicial = 2019 //CAMBAIR ESTOOOOOOOOOOOOO
-                }      
+                    VigenciaInicial = formulario.FechaInscripcion?.Year < MIN_YEAR ? MIN_YEAR : 
+                    formulario.FechaInscripcion?.Year ?? MIN_YEAR
+            }
             );
             potentialMultipropietarios.Add(new Multipropietario
             {
@@ -524,7 +490,8 @@ namespace verificable.Controllers
                 Fojas = formulario.Fojas,
                 FechaInscripcion = formulario.FechaInscripcion,
                 NumInscripcion = formulario.NumInscripcion,
-                VigenciaInicial = 2019 //CAMBAIR ESTOOOOOOOOOOOOO
+                VigenciaInicial = formulario.FechaInscripcion?.Year < MIN_YEAR ? MIN_YEAR : 
+                formulario.FechaInscripcion?.Year ?? MIN_YEAR
             }
             );
             
@@ -532,6 +499,13 @@ namespace verificable.Controllers
             return potentialMultipropietarios;
         }
 
+        public List<Multipropietario> DominiosTransferCase(List<Adquirente> adquirenteCandidates, List<Enajenante> enajenanteCandidates, List<Multipropietario> multipropietarios, Formulario formulario)
+        {
+            List<Multipropietario> potentialMultipropietarios = new List<Multipropietario>();
+
+
+            return potentialMultipropietarios;
+        }
         public List<Multipropietario> GetOngoingMultipropietarios(string comuna, string manzana, string predio)
         {
             List<Multipropietario> ongoingMultipropietarios = new List<Multipropietario>();
