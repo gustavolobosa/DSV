@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
+using NuGet.Versioning;
 using verificable.Models;
 using verificable.ViewModels;
 
@@ -186,7 +187,8 @@ namespace verificable.Controllers
 
                         if (!string.IsNullOrEmpty(Request.Form["adquirentes[" + i + "].porcentaje_derecho"]))
                         {
-                            porcentajeDerechoAdq += decimal.Parse(Request.Form["adquirentes[" + i + "].porcentaje_derecho"]);
+                            CultureInfo culture = new CultureInfo("en-US");
+                            porcentajeDerechoAdq += decimal.Parse(Request.Form["adquirentes[" + i + "].porcentaje_derecho"], culture);
                         }
 
                         string checkboxValueAdq = Request.Form["adquirentes[" + i + "].no_acreditado"].ToString().ToLower();
@@ -202,7 +204,8 @@ namespace verificable.Controllers
 
                         if (!string.IsNullOrEmpty(Request.Form["enajenantes[" + i + "].porcentaje_derecho"]))
                         {
-                            porcentajeDerechoEna += decimal.Parse(Request.Form["enajenantes[" + i + "].porcentaje_derecho"]);
+                            CultureInfo culture = new CultureInfo("en-US");
+                            porcentajeDerechoEna += decimal.Parse(Request.Form["enajenantes[" + i + "].porcentaje_derecho"], culture);
                         }
 
                         string checkboxValueEna = Request.Form["enajenantes[" + i + "].no_acreditado"].ToString().ToLower();
@@ -248,45 +251,80 @@ namespace verificable.Controllers
                             fechaInscripcion = new DateTime(MIN_YEAR, MIN_MONTH, MIN_DAY);
                         }
                     }
-
-                    List<Multipropietario> multipropietariosToAdd;
+                    Console.WriteLine("Enajenantes Candidates: ");
+                    foreach (var enajenante in enajenanteCandidates)
+                    {
+                        Console.WriteLine(enajenante.RunRut, enajenante.PorcentajeDerecho);
+                    }
+                    Console.WriteLine("Adquirientes Candidates: ");
+                    foreach (var adquiriente in adquirenteCandidates)
+                    {
+                        Console.WriteLine(adquiriente.RunRut, adquiriente.PorcentajeDerecho);
+                    }
+                    
+                    Console.WriteLine("Informacion del formulario: ");
+                    Console.WriteLine(formulario.Comuna);
+                    Console.WriteLine(formulario.Manzana);
+                    Console.WriteLine(formulario.Predio);
+                    Console.WriteLine("Last Multipropietarios Related: ");
                     List<Multipropietario> ongoingMultipropietarios = GetOngoingMultipropietarios(formulario.Comuna, formulario.Manzana, formulario.Predio);
+                    foreach (var ongoing in ongoingMultipropietarios)
+                    {
+                        Console.WriteLine(ongoing.RunRut);
+                        Console.WriteLine(ongoing.PorcentajeDerecho);
+                    }
 
                     bool oneEnajenanteAndAdquirente = enajenanteCandidates.Count == 1 && adquirenteCandidates.Count == 1;
 
-                    // CASO 4
+                    List<Multipropietario> multipropietariosToAdd = new List<Multipropietario>();
                     if (TotalRightPercentage(adquirenteCandidates) == 100)
                     {
-                        TotalTransferCase(formulario.Comuna, formulario.Manzana, formulario.Predio);
+                        multipropietariosToAdd = TotalTransferCase(formulario, enajenanteCandidates, adquirenteCandidates);
                     } 
 
-                    // CASO 5
                     else if (oneEnajenanteAndAdquirente)
-                    {                        
+                    {
+                        Console.WriteLine("One Enajenante and Adquirente");
+                        
                         multipropietariosToAdd = OneAdquirenteAndEnajenanteCase(adquirenteCandidates, enajenanteCandidates, ongoingMultipropietarios, formulario);
 
+                        Console.WriteLine("Fuera");
+                        foreach(var multi in multipropietariosToAdd)
+                        {
+                            Console.WriteLine("rut: {0}", multi.RunRut);
+                            Console.WriteLine("%: {0}", multi.PorcentajeDerecho);
+                        }
                     }
 
-                    // CASO 6
                     else
                     {
-                        multipropietariosToAdd = DominiosTransferCase(adquirenteCandidates, enajenanteCandidates, ongoingMultipropietarios, formulario);
+                        multipropietariosToAdd = DominioCase(formulario, enajenanteCandidates, adquirenteCandidates);
                     }
-                    /*_context.Add(new Multipropietario
+                    double? acumulatedPercentage = 0;
+                    foreach (var multipropietario in multipropietariosToAdd)
                     {
-                        Cne = formulario.Cne,
-                        Comuna = formulario.Comuna,
-                        Manzana = formulario.Manzana,
-                        Predio = formulario.Predio,
-                        RunRut = runRut,
-                        PorcentajeDerecho = (double?)porcentajeDerecho,
-                        Fojas = formulario.Fojas,
-                        FechaInscripcion = formulario.FechaInscripcion,
-                        NumInscripcion = formulario.NumInscripcion,
-                        VigenciaInicial = fechaInscripcion.Year
-                    });*/
-
-                    
+                        acumulatedPercentage += multipropietario.PorcentajeDerecho;
+                    }
+                    foreach (var multipropietario in multipropietariosToAdd)
+                    {
+                        multipropietario.PorcentajeDerecho = multipropietario.PorcentajeDerecho * 100 / acumulatedPercentage;
+                    }
+                    foreach(var multipropietario in multipropietariosToAdd)
+                    {
+                        _context.Add(new Multipropietario
+                        {
+                            Cne = multipropietario.Cne,
+                            Comuna = multipropietario.Comuna,
+                            Manzana = multipropietario.Manzana,
+                            Predio = multipropietario.Predio,
+                            RunRut = multipropietario.RunRut,
+                            PorcentajeDerecho = (double?)multipropietario.PorcentajeDerecho,
+                            Fojas = multipropietario.Fojas,
+                            FechaInscripcion = multipropietario.FechaInscripcion,
+                            NumInscripcion = multipropietario.NumInscripcion,
+                            VigenciaInicial = multipropietario.VigenciaInicial
+                        });
+                    }
                 }
                 
                 enajenanteCandidates.Clear();
@@ -408,12 +446,70 @@ namespace verificable.Controllers
         {
             return _context.Comunas.Any(e => e.Nombre == nombre);
         }
-        private void TotalTransferCase(string comuna, string manzana, string predio)
+        private List<Multipropietario> TotalTransferCase(Formulario formulario, List<Enajenante> enajenanteCandidates, List<Adquirente> adquirenteCandidates)
         {
-            List<Multipropietario> multipropietariosToCompare = GetOngoingMultipropietarios(comuna, manzana, predio);
-            _context.Multipropietarios.OrderBy(obj => obj.VigenciaInicial).ThenBy(obj => obj.NumInscripcion);
-            //Search for the previous information about the multipropietarios
-            //Asign values for this cacse, save data in multipropietrios
+            List<Multipropietario> multipropietariosToCompare = GetOngoingMultipropietarios(formulario.Comuna, formulario.Manzana, formulario.Predio);
+            List<Multipropietario> multipropietariosToDiscontinue = new List<Multipropietario>();
+            List<Multipropietario> potentialMultipropietarios = new List<Multipropietario>();
+            double? percentageToTransfer = 0;
+            foreach (var enajenante in enajenanteCandidates)
+            {
+                foreach(var multipropietario in multipropietariosToCompare)
+                {
+                    if(enajenante.RunRut == multipropietario.RunRut)
+                    {
+                        multipropietariosToDiscontinue.Add(multipropietario);
+                        percentageToTransfer += multipropietario.PorcentajeDerecho;
+                    }
+                }
+            }
+            foreach(var adquirente in adquirenteCandidates)
+            {
+                adquirente.PorcentajeDerecho = percentageToTransfer * (adquirente.PorcentajeDerecho/100);
+                DateTime fechaInscripcion = (DateTime)formulario.FechaInscripcion;
+                if (fechaInscripcion.Year < MIN_YEAR)
+                {
+                    fechaInscripcion = new DateTime(MIN_YEAR, MIN_MONTH, MIN_DAY);
+                }
+                potentialMultipropietarios.Add(new Multipropietario
+                {
+                    Cne = formulario.Cne,
+                    Comuna = formulario.Comuna,
+                    Manzana = formulario.Manzana,
+                    Predio = formulario.Predio,
+                    RunRut = adquirente.RunRut,
+                    PorcentajeDerecho = adquirente.PorcentajeDerecho,
+                    Fojas = formulario.Fojas,
+                    FechaInscripcion = formulario.FechaInscripcion,
+                    NumInscripcion = formulario.NumInscripcion,
+                    VigenciaInicial = fechaInscripcion.Year
+                });
+            }
+            foreach(var multipropietario in multipropietariosToCompare)
+            {
+                if (!multipropietariosToDiscontinue.Contains(multipropietario))
+                {
+                    DateTime fechaInscripcion = (DateTime)formulario.FechaInscripcion;
+                    if (fechaInscripcion.Year < MIN_YEAR)
+                    {
+                        fechaInscripcion = new DateTime(MIN_YEAR, MIN_MONTH, MIN_DAY);
+                    }
+                    potentialMultipropietarios.Add(new Multipropietario
+                    {
+                        Cne = formulario.Cne,
+                        Comuna = formulario.Comuna,
+                        Manzana = formulario.Manzana,
+                        Predio = formulario.Predio,
+                        RunRut = multipropietario.RunRut,
+                        PorcentajeDerecho = multipropietario.PorcentajeDerecho,
+                        Fojas = formulario.Fojas,
+                        FechaInscripcion = formulario.FechaInscripcion,
+                        NumInscripcion = formulario.NumInscripcion,
+                        VigenciaInicial = fechaInscripcion.Year
+                    });
+                }
+            }
+            return potentialMultipropietarios;
         }
         private double? TotalRightPercentage(List<Adquirente> compraventaAdquirientes)
         {
@@ -433,14 +529,23 @@ namespace verificable.Controllers
             Enajenante enajenante = enajenanteCandidates[0];
             double? originalPercentage = 0;
 
+
+
+            Console.WriteLine("adquirenteR: {0}", adquirente.RunRut);
+            Console.WriteLine("enajenanteR: {0}", enajenante.RunRut);
+            Console.WriteLine("adquirente%: {0}", adquirente.PorcentajeDerecho);
+            Console.WriteLine("enajenante%: {0}", enajenante.PorcentajeDerecho);
+
             foreach (var multipropietario in multipropietarios)
             {
                 if(multipropietario.RunRut == enajenante.RunRut)
                 {
                     originalPercentage = multipropietario.PorcentajeDerecho;
+                    Console.WriteLine("RUT: {0}", multipropietario.RunRut);
                 }
                 else
                 {
+                    Console.WriteLine("RUT: {0}", multipropietario.RunRut);
 
                     potentialMultipropietarios.Add(new Multipropietario
                         {
@@ -461,8 +566,14 @@ namespace verificable.Controllers
 
             double? percetnageToChange = (originalPercentage) * (enajenante.PorcentajeDerecho) / 100;
 
+            Console.WriteLine("originalPercentage: {0}", originalPercentage);
+            Console.WriteLine("percetnageToChange: {0}", percetnageToChange);
+
             adquirente.PorcentajeDerecho = percetnageToChange;
             enajenante.PorcentajeDerecho = originalPercentage - percetnageToChange;
+
+            Console.WriteLine("adquirente.PorcentajeDerecho: {0}", adquirente.PorcentajeDerecho);
+            Console.WriteLine("enajentante.PorcentajeDerecho: {0}", enajenante.PorcentajeDerecho);
 
             potentialMultipropietarios.Add(new Multipropietario
                 {
@@ -475,9 +586,8 @@ namespace verificable.Controllers
                     Fojas = formulario.Fojas,
                     FechaInscripcion = formulario.FechaInscripcion,
                     NumInscripcion = formulario.NumInscripcion,
-                    VigenciaInicial = formulario.FechaInscripcion?.Year < MIN_YEAR ? MIN_YEAR : 
-                    formulario.FechaInscripcion?.Year ?? MIN_YEAR
-            }
+                    VigenciaInicial = 2019 //CAMBAIR ESTOOOOOOOOOOOOO
+                }      
             );
             potentialMultipropietarios.Add(new Multipropietario
             {
@@ -490,8 +600,7 @@ namespace verificable.Controllers
                 Fojas = formulario.Fojas,
                 FechaInscripcion = formulario.FechaInscripcion,
                 NumInscripcion = formulario.NumInscripcion,
-                VigenciaInicial = formulario.FechaInscripcion?.Year < MIN_YEAR ? MIN_YEAR : 
-                formulario.FechaInscripcion?.Year ?? MIN_YEAR
+                VigenciaInicial = 2019 //CAMBAIR ESTOOOOOOOOOOOOO
             }
             );
             
@@ -499,13 +608,82 @@ namespace verificable.Controllers
             return potentialMultipropietarios;
         }
 
-        public List<Multipropietario> DominiosTransferCase(List<Adquirente> adquirenteCandidates, List<Enajenante> enajenanteCandidates, List<Multipropietario> multipropietarios, Formulario formulario)
+        private List<Multipropietario> DominioCase(Formulario formulario, List<Enajenante> enajenanteCandidates, List<Adquirente> adquirenteCandidates)
         {
+            List<Multipropietario> multipropietariosToCompare = GetOngoingMultipropietarios(formulario.Comuna, formulario.Manzana, formulario.Predio);
             List<Multipropietario> potentialMultipropietarios = new List<Multipropietario>();
+            double? auxiliaryRightPercentage = 0;
+            foreach (var multipropietario in multipropietariosToCompare)
+            {
+                if(multipropietario.RunRut == enajenanteCandidates.First().RunRut)
+                {
+                    auxiliaryRightPercentage = multipropietario.PorcentajeDerecho;
+                    multipropietario.PorcentajeDerecho = multipropietario.PorcentajeDerecho - enajenanteCandidates.First().PorcentajeDerecho;
+                    
+                    if(multipropietario.PorcentajeDerecho <= 0)
+                    {
+                        multipropietario.PorcentajeDerecho = 0;
+                        continue;
+                    }
+                    else
+                    {
+                        potentialMultipropietarios.Add(new Multipropietario
+                        {
+                            Cne = formulario.Cne,
+                            Comuna = formulario.Comuna,
+                            Manzana = formulario.Manzana,
+                            Predio = formulario.Predio,
+                            RunRut = multipropietario.RunRut,
+                            PorcentajeDerecho = multipropietario.PorcentajeDerecho,
+                            Fojas = formulario.Fojas,
+                            FechaInscripcion = formulario.FechaInscripcion,
+                            NumInscripcion = formulario.NumInscripcion,
+                            VigenciaInicial = formulario.FechaInscripcion.Value.Year
+                        });
+                    }
+                }
+                potentialMultipropietarios.Add(new Multipropietario
+                {
+                    Cne = formulario.Cne,
+                    Comuna = formulario.Comuna,
+                    Manzana = formulario.Manzana,
+                    Predio = formulario.Predio,
+                    RunRut = multipropietario.RunRut,
+                    PorcentajeDerecho = multipropietario.PorcentajeDerecho,
+                    Fojas = formulario.Fojas,
+                    FechaInscripcion = formulario.FechaInscripcion,
+                    NumInscripcion = formulario.NumInscripcion,
+                    VigenciaInicial = formulario.FechaInscripcion.Value.Year
+                });
+            }
+            foreach(var adquirente in adquirenteCandidates)
+            {
+                potentialMultipropietarios.Add(new Multipropietario
+                {
+                    Cne = formulario.Cne,
+                    Comuna = formulario.Comuna,
+                    Manzana = formulario.Manzana,
+                    Predio = formulario.Predio,
+                    RunRut = adquirente.RunRut,
+                    PorcentajeDerecho = adquirente.PorcentajeDerecho,
+                    Fojas = formulario.Fojas,
+                    FechaInscripcion = formulario.FechaInscripcion,
+                    NumInscripcion = formulario.NumInscripcion,
+                    VigenciaInicial = formulario.FechaInscripcion.Value.Year
+                });
+            }
 
+            foreach(var multipropietario in multipropietariosToCompare)
+            {
+                if(multipropietario.PorcentajeDerecho == 0)
+                {
+                    multipropietario.PorcentajeDerecho = auxiliaryRightPercentage;
+                }
+            }
 
             return potentialMultipropietarios;
         }
+
         public List<Multipropietario> GetOngoingMultipropietarios(string comuna, string manzana, string predio)
         {
             List<Multipropietario> ongoingMultipropietarios = new List<Multipropietario>();
