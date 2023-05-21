@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -251,22 +252,7 @@ namespace verificable.Controllers
                             fechaInscripcion = new DateTime(MIN_YEAR, MIN_MONTH, MIN_DAY);
                         }
                     }
-                    Console.WriteLine("Enajenantes Candidates: ");
-                    foreach (var enajenante in enajenanteCandidates)
-                    {
-                        Console.WriteLine(enajenante.RunRut, enajenante.PorcentajeDerecho);
-                    }
-                    Console.WriteLine("Adquirientes Candidates: ");
-                    foreach (var adquiriente in adquirenteCandidates)
-                    {
-                        Console.WriteLine(adquiriente.RunRut, adquiriente.PorcentajeDerecho);
-                    }
                     
-                    Console.WriteLine("Informacion del formulario: ");
-                    Console.WriteLine(formulario.Comuna);
-                    Console.WriteLine(formulario.Manzana);
-                    Console.WriteLine(formulario.Predio);
-                    Console.WriteLine("Last Multipropietarios Related: ");
                     List<Multipropietario> ongoingMultipropietarios = GetOngoingMultipropietarios(formulario.Comuna, formulario.Manzana, formulario.Predio);
                     foreach (var ongoing in ongoingMultipropietarios)
                     {
@@ -309,8 +295,19 @@ namespace verificable.Controllers
                     {
                         multipropietario.PorcentajeDerecho = multipropietario.PorcentajeDerecho * 100 / acumulatedPercentage;
                     }
-                    foreach(var multipropietario in multipropietariosToAdd)
+
+                    multipropietariosToAdd = mergeSameMultipropietariosPercentage(multipropietariosToAdd);
+
+                    Console.WriteLine("-----------porcentajes arreglados-------------");
+                    foreach (var multi in multipropietariosToAdd)
                     {
+                        Console.WriteLine("rut: {0}", multi.RunRut);
+                        Console.WriteLine("%: {0}", multi.PorcentajeDerecho);
+                    }
+
+                    foreach (var multipropietario in multipropietariosToAdd)
+                    {
+                        
                         _context.Add(new Multipropietario
                         {
                             Cne = multipropietario.Cne,
@@ -529,23 +526,20 @@ namespace verificable.Controllers
             Enajenante enajenante = enajenanteCandidates[0];
             double? originalPercentage = 0;
 
-
-
-            Console.WriteLine("adquirenteR: {0}", adquirente.RunRut);
-            Console.WriteLine("enajenanteR: {0}", enajenante.RunRut);
-            Console.WriteLine("adquirente%: {0}", adquirente.PorcentajeDerecho);
-            Console.WriteLine("enajenante%: {0}", enajenante.PorcentajeDerecho);
+            DateTime fechaInscripcion = (DateTime)formulario.FechaInscripcion;
+            if (fechaInscripcion.Year < MIN_YEAR)
+            {
+                fechaInscripcion = new DateTime(MIN_YEAR, MIN_MONTH, MIN_DAY);
+            }
 
             foreach (var multipropietario in multipropietarios)
             {
                 if(multipropietario.RunRut == enajenante.RunRut)
                 {
                     originalPercentage = multipropietario.PorcentajeDerecho;
-                    Console.WriteLine("RUT: {0}", multipropietario.RunRut);
                 }
                 else
                 {
-                    Console.WriteLine("RUT: {0}", multipropietario.RunRut);
 
                     potentialMultipropietarios.Add(new Multipropietario
                         {
@@ -558,7 +552,7 @@ namespace verificable.Controllers
                             Fojas = formulario.Fojas,
                             FechaInscripcion = formulario.FechaInscripcion,
                             NumInscripcion = formulario.NumInscripcion,
-                            VigenciaInicial = multipropietario.VigenciaInicial
+                            VigenciaInicial = fechaInscripcion.Year
                         }
                     );
                 }
@@ -566,14 +560,9 @@ namespace verificable.Controllers
 
             double? percetnageToChange = (originalPercentage) * (enajenante.PorcentajeDerecho) / 100;
 
-            Console.WriteLine("originalPercentage: {0}", originalPercentage);
-            Console.WriteLine("percetnageToChange: {0}", percetnageToChange);
-
             adquirente.PorcentajeDerecho = percetnageToChange;
             enajenante.PorcentajeDerecho = originalPercentage - percetnageToChange;
 
-            Console.WriteLine("adquirente.PorcentajeDerecho: {0}", adquirente.PorcentajeDerecho);
-            Console.WriteLine("enajentante.PorcentajeDerecho: {0}", enajenante.PorcentajeDerecho);
 
             potentialMultipropietarios.Add(new Multipropietario
                 {
@@ -586,7 +575,7 @@ namespace verificable.Controllers
                     Fojas = formulario.Fojas,
                     FechaInscripcion = formulario.FechaInscripcion,
                     NumInscripcion = formulario.NumInscripcion,
-                    VigenciaInicial = 2019 //CAMBAIR ESTOOOOOOOOOOOOO
+                    VigenciaInicial = fechaInscripcion.Year
                 }      
             );
             potentialMultipropietarios.Add(new Multipropietario
@@ -600,7 +589,7 @@ namespace verificable.Controllers
                 Fojas = formulario.Fojas,
                 FechaInscripcion = formulario.FechaInscripcion,
                 NumInscripcion = formulario.NumInscripcion,
-                VigenciaInicial = 2019 //CAMBAIR ESTOOOOOOOOOOOOO
+                VigenciaInicial = fechaInscripcion.Year
             }
             );
             
@@ -682,6 +671,71 @@ namespace verificable.Controllers
             }
 
             return potentialMultipropietarios;
+        }
+
+        public List<Multipropietario> mergeSameMultipropietariosPercentage(List<Multipropietario> multipropietariosToAdd)
+        {
+            Dictionary<string, double> mergedPercentages = new Dictionary<string, double>();
+            Dictionary<string, int> repetedRuts = new Dictionary<string, int>();  
+            List<Multipropietario> multipropietariosToRemove = new List<Multipropietario>();
+
+            foreach (var multi in multipropietariosToAdd)
+            {
+                if (repetedRuts.ContainsKey(multi.RunRut))
+                {
+                    repetedRuts[multi.RunRut] += 1;
+                }
+                else
+                {
+                    repetedRuts.Add(multi.RunRut, 1);
+                }
+
+                if (mergedPercentages.ContainsKey(multi.RunRut))
+                {
+                    mergedPercentages[multi.RunRut] += multi.PorcentajeDerecho.Value;
+                }
+                else
+                {
+                    mergedPercentages.Add(multi.RunRut, multi.PorcentajeDerecho.Value);
+                }
+            }
+
+            foreach (var kvp in mergedPercentages)
+            {
+                string rut = kvp.Key;
+                double per = kvp.Value;
+                Console.WriteLine("merged percentages:");
+                Console.WriteLine(rut);
+                Console.WriteLine(per);
+            }
+            foreach (var kvp in repetedRuts)
+            {
+                string rut = kvp.Key;
+                int times = kvp.Value;
+                Console.WriteLine("repeted ruts:");
+                Console.WriteLine(rut);
+                Console.WriteLine(times);
+            }
+
+            foreach (var multi in multipropietariosToAdd)
+            {
+                multi.PorcentajeDerecho = mergedPercentages[multi.RunRut];
+            }
+
+            foreach (var multi in multipropietariosToAdd)
+            {
+                if (repetedRuts[multi.RunRut] > 1)
+                {
+                    multipropietariosToRemove.Add(multi);
+                    repetedRuts[multi.RunRut] -= 1;
+                }
+            }
+            foreach (var multiToRemove in multipropietariosToRemove)
+            {
+                multipropietariosToAdd.Remove(multiToRemove);
+            }
+
+            return multipropietariosToAdd;
         }
 
         public List<Multipropietario> GetOngoingMultipropietarios(string comuna, string manzana, string predio)
