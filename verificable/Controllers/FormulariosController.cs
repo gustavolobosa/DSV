@@ -254,56 +254,14 @@ namespace verificable.Controllers
                     }
                     
                     List<Multipropietario> ongoingMultipropietarios = GetOngoingMultipropietarios(formulario.Comuna, formulario.Manzana, formulario.Predio);
-                    foreach (var ongoing in ongoingMultipropietarios)
-                    {
-                        Console.WriteLine(ongoing.RunRut);
-                        Console.WriteLine(ongoing.PorcentajeDerecho);
-                    }
+                    
 
                     bool oneEnajenanteAndAdquirente = enajenanteCandidates.Count == 1 && adquirenteCandidates.Count == 1;
 
                     List<Multipropietario> multipropietariosToAdd = new List<Multipropietario>();
-                    if (TotalRightPercentage(adquirenteCandidates) == 100)
-                    {
-                        multipropietariosToAdd = TotalTransferCase(formulario, enajenanteCandidates, adquirenteCandidates);
-                    } 
 
-                    else if (oneEnajenanteAndAdquirente)
-                    {
-                        Console.WriteLine("One Enajenante and Adquirente");
-                        
-                        multipropietariosToAdd = OneAdquirenteAndEnajenanteCase(adquirenteCandidates, enajenanteCandidates, ongoingMultipropietarios, formulario);
+                    multipropietariosToAdd = CasesToTransfer(adquirenteCandidates, enajenanteCandidates, oneEnajenanteAndAdquirente, formulario, ongoingMultipropietarios, multipropietariosToAdd);
 
-                        Console.WriteLine("Fuera");
-                        foreach(var multi in multipropietariosToAdd)
-                        {
-                            Console.WriteLine("rut: {0}", multi.RunRut);
-                            Console.WriteLine("%: {0}", multi.PorcentajeDerecho);
-                        }
-                    }
-
-                    else
-                    {
-                        multipropietariosToAdd = DominioCase(formulario, enajenanteCandidates, adquirenteCandidates);
-                    }
-                    double? acumulatedPercentage = 0;
-                    foreach (var multipropietario in multipropietariosToAdd)
-                    {
-                        acumulatedPercentage += multipropietario.PorcentajeDerecho;
-                    }
-                    foreach (var multipropietario in multipropietariosToAdd)
-                    {
-                        multipropietario.PorcentajeDerecho = multipropietario.PorcentajeDerecho * 100 / acumulatedPercentage;
-                    }
-
-                    multipropietariosToAdd = mergeSameMultipropietariosPercentage(multipropietariosToAdd);
-
-                    Console.WriteLine("-----------porcentajes arreglados-------------");
-                    foreach (var multi in multipropietariosToAdd)
-                    {
-                        Console.WriteLine("rut: {0}", multi.RunRut);
-                        Console.WriteLine("%: {0}", multi.PorcentajeDerecho);
-                    }
 
                     foreach (var multipropietario in multipropietariosToAdd)
                     {
@@ -442,6 +400,40 @@ namespace verificable.Controllers
         public bool ComunaExists(string nombre)
         {
             return _context.Comunas.Any(e => e.Nombre == nombre);
+        }
+
+        public List<Multipropietario> CasesToTransfer(List<Adquirente>  adquirenteCandidates, List<Enajenante> enajenanteCandidates,bool oneEnajenanteAndAdquirente,Formulario formulario, List<Multipropietario> ongoingMultipropietarios, List<Multipropietario> multipropietariosToAdd)
+        {
+            if (TotalRightPercentage(adquirenteCandidates) == 100)
+            {
+                multipropietariosToAdd = TotalTransferCase(formulario, enajenanteCandidates, adquirenteCandidates);
+            }
+
+            else if (oneEnajenanteAndAdquirente)
+            {
+                multipropietariosToAdd = OneAdquirenteAndEnajenanteCase(adquirenteCandidates, enajenanteCandidates, ongoingMultipropietarios, formulario);
+            }
+
+            else
+            {
+                multipropietariosToAdd = DominioCase(formulario, enajenanteCandidates, adquirenteCandidates);
+            }
+
+            double? acumulatedPercentage = 0;
+
+            foreach (var multipropietario in multipropietariosToAdd)
+            {
+                acumulatedPercentage += multipropietario.PorcentajeDerecho;
+            }
+
+            foreach (var multipropietario in multipropietariosToAdd)
+            {
+                multipropietario.PorcentajeDerecho = multipropietario.PorcentajeDerecho * 100 / acumulatedPercentage;
+            }
+
+            multipropietariosToAdd = mergeSameMultipropietariosPercentage(multipropietariosToAdd);
+
+            return multipropietariosToAdd;
         }
         private List<Multipropietario> TotalTransferCase(Formulario formulario, List<Enajenante> enajenanteCandidates, List<Adquirente> adquirenteCandidates)
         {
@@ -698,23 +690,6 @@ namespace verificable.Controllers
                 {
                     mergedPercentages.Add(multi.RunRut, multi.PorcentajeDerecho.Value);
                 }
-            }
-
-            foreach (var kvp in mergedPercentages)
-            {
-                string rut = kvp.Key;
-                double per = kvp.Value;
-                Console.WriteLine("merged percentages:");
-                Console.WriteLine(rut);
-                Console.WriteLine(per);
-            }
-            foreach (var kvp in repetedRuts)
-            {
-                string rut = kvp.Key;
-                int times = kvp.Value;
-                Console.WriteLine("repeted ruts:");
-                Console.WriteLine(rut);
-                Console.WriteLine(times);
             }
 
             foreach (var multi in multipropietariosToAdd)
