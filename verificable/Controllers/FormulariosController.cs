@@ -85,6 +85,9 @@ namespace verificable.Controllers
                 _context.Add(formulario);
                 await _context.SaveChangesAsync();
 
+                const string regularizacionDePatrimonio = "Regularizacion De Patrimonio";
+                const string compraventa = "Compraventa";
+
                 int numEnajenantes = 0;
                 foreach (string key in Request.Form.Keys)
                 {
@@ -108,7 +111,7 @@ namespace verificable.Controllers
                         numAdquirentes++;
                     }
                 }
-                if (formulario.Cne == "Regularizacion De Patrimonio")
+                if (formulario.Cne == regularizacionDePatrimonio)
                 {
                     //El siguente bloque es para ver a cuales adquirentes les falta un porcentaje y calcular la suma de pocentajes total.
                     decimal? porcentajeDerechoAdq = 0;
@@ -174,7 +177,7 @@ namespace verificable.Controllers
                         }
                     }
                 }
-                else if (formulario.Cne == "Compraventa") 
+                else if (formulario.Cne == compraventa) 
                 {
                     //El siguente bloque es para ver a cuales adquirentes les falta un porcentaje y calcular la suma de pocentajes total.
                     decimal? porcentajeDerechoAdq = 0;
@@ -665,7 +668,7 @@ namespace verificable.Controllers
             return potentialMultipropietarios;
         }
 
-        private List<Multipropietario> mergeSameMultipropietariosPercentage(List<Multipropietario> multipropietariosToAdd)
+        private List<Multipropietario> MergeSameMultipropietariosPercentage(List<Multipropietario> multipropietariosToAdd)
         {
             Dictionary<string, double> mergedPercentages = new Dictionary<string, double>();
             Dictionary<string, int> repetedRuts = new Dictionary<string, int>();  
