@@ -511,7 +511,7 @@ namespace verificable.Controllers
         }
 
 
-        public List<Multipropietario> OneAdquirenteAndEnajenanteCase(List<Adquirente> adquirenteCandidates, List<Enajenante> enajenanteCandidates, List<Multipropietario> multipropietarios, Formulario formulario)
+        private List<Multipropietario> OneAdquirenteAndEnajenanteCase(List<Adquirente> adquirenteCandidates, List<Enajenante> enajenanteCandidates, List<Multipropietario> multipropietarios, Formulario formulario)
         {
             List<Multipropietario> potentialMultipropietarios = new List<Multipropietario>();
             Adquirente adquirente = adquirenteCandidates[0];
@@ -665,7 +665,7 @@ namespace verificable.Controllers
             return potentialMultipropietarios;
         }
 
-        public List<Multipropietario> mergeSameMultipropietariosPercentage(List<Multipropietario> multipropietariosToAdd)
+        private List<Multipropietario> mergeSameMultipropietariosPercentage(List<Multipropietario> multipropietariosToAdd)
         {
             Dictionary<string, double> mergedPercentages = new Dictionary<string, double>();
             Dictionary<string, int> repetedRuts = new Dictionary<string, int>();  
