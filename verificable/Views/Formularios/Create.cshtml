@@ -11,7 +11,7 @@
 <div class="row">
     <div class="col-md-12">
 
-        <form asp-action="Create" method="post" onsubmit="return validatePorcentajeDerecho();">
+        <form asp-action="Create" method="post" onsubmit="return checkFormValidity();">
             <div class="border">
                 <h4 class="box-title">Informacion de la Escritura</h4>
                 <label for="cne">CNE:</label>
@@ -324,6 +324,53 @@
             return true;
         }
 
+        function checkRutFormat() {
+            //var enajenantes = document.getElementsByName("enajenantes[0].run_rut");
+            //var adquirentes = document.getElementsByName("adquirentes[0].run_rut");
+            var enajenantes = document.querySelectorAll('[name^="enajenantes"][name$="run_rut"]');
+            var adquirentes = document.querySelectorAll('[name^="adquirentes"][name$="run_rut"]');
+
+            if (document.getElementsByName("Cne")[0] == "Compraventa"){
+                // Validate enajenantes
+                for (var i = 0; i < enajenantes.length; i++) {
+                    if (!/^(\d+)-[1-9K]$/.test(enajenantes[i].value)) {
+                        alert("Invalid Run/Rut format in Enajenantes");
+                        return false;
+                    }
+                }
+
+                // Validate adquirentes
+                for (var i = 0; i < adquirentes.length; i++) {
+                    if (!/^(\d+)-[1-9K]$/.test(adquirentes[i].value)) {
+                        alert("Invalid Run/Rut format in Adquirentes");
+                        return false;
+                    }
+                }
+
+                return true; // Submit the form
+            }
+            else{
+                // Validate adquirentes
+                for (var i = 0; i < adquirentes.length; i++) {
+                    if (!/^(\d+)-[1-9K]$/.test(adquirentes[i].value)) {
+                        alert("Invalid Run/Rut format in Adquirentes");
+                        return false;
+                    }
+                }
+
+                return true; // Submit the form
+            }
+        }
+
+        function checkFormValidity(){
+            if (!validatePorcentajeDerecho()) {
+                return false;
+            }
+            if (!checkRutFormat()) {
+                return false;
+            }
+            return true;
+        }
 
 
     </script>
