@@ -140,6 +140,9 @@
 
     <script>
 
+        var currentDate = new Date().toISOString().split("T")[0];
+        document.getElementById("FechaInscripcion").setAttribute("max", currentDate);
+
         //Para  enajenantes
 
         var enajenantesCount = 1;
