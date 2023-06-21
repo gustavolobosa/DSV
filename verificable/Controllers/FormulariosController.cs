@@ -76,10 +76,11 @@ namespace verificable.Controllers
         [ValidateAntiForgeryToken]
 
 
-        public async Task<IActionResult> Create([Bind("NumAtencion,Cne,Comuna,Manzana,Predio,Fojas,FechaInscripcion,NumInscripcion")] Formulario formulario)
+        public async Task<IActionResult> Create([Bind("NumAtencion,Cne,Comuna,Manzana,Predio,Fojas,FechaInscripcion,NumInscripcion,Vigente")] Formulario formulario)
         {
             List<Adquirente> adquirenteCandidates = new List<Adquirente>();
             List<Enajenante> enajenanteCandidates = new List<Enajenante>();
+            Console.WriteLine("Formulario vigente", formulario.Vigente);
             if (ModelState.IsValid)
             {
                 _context.Add(formulario);

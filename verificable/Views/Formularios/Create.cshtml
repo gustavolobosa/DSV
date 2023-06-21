@@ -121,6 +121,10 @@
                     <label for="NumInscripcion">Número de Inscripción:</label>
                     <input type="number" id="NumInscripcion" name="NumInscripcion" required>
                 </span>
+                <span class="col">
+                    <label for="Vigente"></label>
+                    <input type="hidden" id="Vigente" name="Vigente" value = true >
+                </span>
             </div>
 
             <input type="submit" value="Enviar">
@@ -328,8 +332,7 @@
         }
 
         function checkRutFormat() {
-            //var enajenantes = document.getElementsByName("enajenantes[0].run_rut");
-            //var adquirentes = document.getElementsByName("adquirentes[0].run_rut");
+
             var enajenantes = document.querySelectorAll('[name^="enajenantes"][name$="run_rut"]');
             var adquirentes = document.querySelectorAll('[name^="adquirentes"][name$="run_rut"]');
 

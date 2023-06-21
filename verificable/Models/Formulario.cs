@@ -15,6 +15,8 @@ public partial class Formulario
 
     public string? Predio { get; set; }
 
+    public bool? Vigente { get; set; }
+
     public int? Fojas { get; set; }
 
     public DateTime? FechaInscripcion { get; set; }
