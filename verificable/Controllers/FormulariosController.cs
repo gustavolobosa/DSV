@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Razor.Language.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using NuGet.Versioning;
@@ -80,7 +81,7 @@ namespace verificable.Controllers
         {
             List<Adquirente> adquirenteCandidates = new List<Adquirente>();
             List<Enajenante> enajenanteCandidates = new List<Enajenante>();
-            Console.WriteLine("Formulario vigente", formulario.Vigente);
+            
             if (ModelState.IsValid)
             {
                 _context.Add(formulario);
@@ -88,6 +89,8 @@ namespace verificable.Controllers
 
                 const string regularizacionDePatrimonio = "Regularizacion De Patrimonio";
                 const string compraventa = "Compraventa";
+
+                UpdateFormularioVigencia(formulario.NumInscripcion);
 
                 int numEnajenantes = 0;
                 foreach (string key in Request.Form.Keys)
@@ -120,6 +123,8 @@ namespace verificable.Controllers
                 {
                     CompraventaCase(formulario, numAdquirentes, numEnajenantes, adquirenteCandidates, enajenanteCandidates);
                 }
+
+                
                 
                 enajenanteCandidates.Clear();
                 adquirenteCandidates.Clear();
@@ -241,7 +246,35 @@ namespace verificable.Controllers
             return _context.Comunas.Any(e => e.Nombre == nombre);
         }
 
-        public bool RegularizacionDePatrimonioCase(Formulario formulario, int numAdquirentes, int numEnajenantes)
+        private void UpdateFormularioVigencia(int? numInscripcion)
+        {
+            var formularios = _context.Formularios.Where(e => e.NumInscripcion == numInscripcion).ToList();
+
+            if (formularios.Count >= 1)
+            {
+                var formularioMaxNumAtencion = formularios.OrderByDescending(e => e.NumAtencion).First();
+                DateTime fechaInscripcionMaxNumAtencion = (DateTime)formularioMaxNumAtencion.FechaInscripcion;
+                var formularioMaxNumAtencionYear = fechaInscripcionMaxNumAtencion.Year;
+
+                foreach (var formulario in formularios)
+                {
+                    DateTime fechaInscripcion = (DateTime)formulario.FechaInscripcion;
+                    var formularioYear = fechaInscripcion.Year;
+                    formulario.Vigente = formulario == formularioMaxNumAtencion && formularioYear == formularioMaxNumAtencionYear;
+                }
+
+                var formulariosNoVigentes = formularios.Where(f => f != formularioMaxNumAtencion);
+                foreach (var formulario in formulariosNoVigentes)
+                {
+                    formulario.Vigente = false;
+                }
+
+                _context.SaveChanges();
+            }
+        }
+
+
+        public void RegularizacionDePatrimonioCase(Formulario formulario, int numAdquirentes, int numEnajenantes)
         {
             //El siguente bloque es para ver a cuales adquirentes les falta un porcentaje y calcular la suma de pocentajes total.
             decimal? porcentajeDerechoAdq = 0;
@@ -306,10 +339,9 @@ namespace verificable.Controllers
                     _context.Add(new Comuna { Nombre = formulario.Comuna });
                 }
             }
-            return true;
         }
 
-        public bool CompraventaCase(Formulario formulario, int numAdquirentes, int numEnajenantes, List<Adquirente> adquirenteCandidates, List<Enajenante> enajenanteCandidates)
+        public void CompraventaCase(Formulario formulario, int numAdquirentes, int numEnajenantes, List<Adquirente> adquirenteCandidates, List<Enajenante> enajenanteCandidates)
         {
             //El siguente bloque es para ver a cuales adquirentes les falta un porcentaje y calcular la suma de pocentajes total.
             decimal? porcentajeDerechoAdq = 0;
@@ -416,7 +448,6 @@ namespace verificable.Controllers
                     VigenciaInicial = multipropietario.VigenciaInicial
                 });
             }
-            return true;
         }
 
         public List<Multipropietario> CasesToTransfer(List<Adquirente>  adquirenteCandidates, List<Enajenante> enajenanteCandidates,bool oneEnajenanteAndAdquirente,Formulario formulario, List<Multipropietario> ongoingMultipropietarios, List<Multipropietario> multipropietariosToAdd)
