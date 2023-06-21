@@ -17,7 +17,7 @@ CREATE TABLE formularios (
    fojas INT NULL,
    fecha_inscripcion DATE NULL,
    num_inscripcion INT NULL,
-   vigencia BIT NULL
+   vestado VARCHAR(50) NULL
 );
 GO
 
