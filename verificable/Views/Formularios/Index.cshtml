@@ -27,6 +27,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.Fojas)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Estado)
+            </th>
             
             <th></th>
         </tr>
@@ -49,11 +52,20 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Fojas)
             </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Estado)
+            </td>
             
             <td>
-                <a asp-action="Edit" asp-route-id="@item.NumAtencion">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.NumAtencion">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.NumAtencion">Delete</a>
+                    <a asp-action="Details" asp-route-id="@item.NumAtencion" class="btn btn-primary">Details</a> |
+                @if (item.Estado != "Eliminado")
+                {
+                    <a asp-action="Delete" asp-route-id="@item.NumAtencion" class="btn btn-danger" >Delete</a>
+                }
+                else
+                {
+                    <small>Formulario eliminado</small>
+                }
             </td>
         </tr>
 }

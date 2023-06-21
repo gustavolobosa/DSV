@@ -202,6 +202,8 @@ namespace verificable.Controllers
                 return NotFound();
             }
 
+            formulario.Estado = "Eliminado"; // Cambiar el estado a "eliminado"
+
             return View(formulario);
         }
 
@@ -230,10 +232,15 @@ namespace verificable.Controllers
                 {
                     _context.Adquirentes.Remove(adquirente);
                 }
-                _context.Formularios.Remove(formulario);
+
+                // Cambiar el estado a "Eliminado"
+                formulario.Estado = "Eliminado";
+                
             }
             
             await _context.SaveChangesAsync();
+            UpdateFormularioVigencia(formulario.NumInscripcion);
+
             return RedirectToAction(nameof(Index));
         }
 
@@ -248,7 +255,7 @@ namespace verificable.Controllers
 
         private void UpdateFormularioVigencia(int? numInscripcion)
         {
-            var formularios = _context.Formularios.Where(e => e.NumInscripcion == numInscripcion).ToList();
+            var formularios = _context.Formularios.Where(e => e.NumInscripcion == numInscripcion && e.Estado != "Eliminado").ToList();
 
             if (formularios.Count >= 1)
             {
@@ -261,6 +268,7 @@ namespace verificable.Controllers
                     var formularioFecha = (DateTime)formulario.FechaInscripcion;
                     var formularioYear = formularioFecha.Year;
                     formulario.Estado = formulario == formularioMaxNumAtencion && formularioYear == formularioMaxNumAtencionYear ? "Vigente" : "No vigente";
+                    
                 }
 
                 _context.SaveChanges();
