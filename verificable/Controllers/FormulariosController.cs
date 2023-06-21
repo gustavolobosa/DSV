@@ -77,7 +77,7 @@ namespace verificable.Controllers
         [ValidateAntiForgeryToken]
 
 
-        public async Task<IActionResult> Create([Bind("NumAtencion,Cne,Comuna,Manzana,Predio,Fojas,FechaInscripcion,NumInscripcion,Vigente")] Formulario formulario)
+        public async Task<IActionResult> Create([Bind("NumAtencion,Cne,Comuna,Manzana,Predio,Fojas,FechaInscripcion,NumInscripcion,Estado")] Formulario formulario)
         {
             List<Adquirente> adquirenteCandidates = new List<Adquirente>();
             List<Enajenante> enajenanteCandidates = new List<Enajenante>();
@@ -157,7 +157,7 @@ namespace verificable.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("NumAtencion,Cne,Comuna,Manzana,Predio,Fojas,FechaInscripcion,NumInscripcion")] Formulario formulario)
+        public async Task<IActionResult> Edit(int id, [Bind("NumAtencion,Cne,Comuna,Manzana,Predio,Fojas,FechaInscripcion,NumInscripcion,Estado")] Formulario formulario)
         {
             if (id != formulario.NumAtencion)
             {
@@ -258,15 +258,9 @@ namespace verificable.Controllers
 
                 foreach (var formulario in formularios)
                 {
-                    DateTime fechaInscripcion = (DateTime)formulario.FechaInscripcion;
-                    var formularioYear = fechaInscripcion.Year;
-                    formulario.Vigente = formulario == formularioMaxNumAtencion && formularioYear == formularioMaxNumAtencionYear;
-                }
-
-                var formulariosNoVigentes = formularios.Where(f => f != formularioMaxNumAtencion);
-                foreach (var formulario in formulariosNoVigentes)
-                {
-                    formulario.Vigente = false;
+                    var formularioFecha = (DateTime)formulario.FechaInscripcion;
+                    var formularioYear = formularioFecha.Year;
+                    formulario.Estado = formulario == formularioMaxNumAtencion && formularioYear == formularioMaxNumAtencionYear ? "Vigente" : "No vigente";
                 }
 
                 _context.SaveChanges();
