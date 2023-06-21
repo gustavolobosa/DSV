@@ -21,7 +21,7 @@ namespace verificable.Controllers
             _context = context;
             
             var multipropietarios = _context.Multipropietarios.OrderBy(obj => obj.VigenciaInicial).ToList();
-            cleanFinalDates(multipropietarios);
+            CleanFinalDates(multipropietarios);
             foreach (var multipropietario in multipropietarios)
             {
                 var comuna = multipropietario.Comuna;
@@ -241,7 +241,7 @@ namespace verificable.Controllers
           return (_context.Multipropietarios?.Any(e => e.Id == id)).GetValueOrDefault();
         }
 
-        private void cleanFinalDates(List<Multipropietario> multipropietarioList)
+        private void CleanFinalDates(List<Multipropietario> multipropietarioList)
         {
             foreach (var multipropietario in multipropietarioList)
             {
