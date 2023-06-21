@@ -16,7 +16,8 @@ CREATE TABLE formularios (
    predio VARCHAR(50) NULL,
    fojas INT NULL,
    fecha_inscripcion DATE NULL,
-   num_inscripcion INT NULL
+   num_inscripcion INT NULL,
+   vigencia BIT NULL
 );
 GO
 
