@@ -456,7 +456,7 @@ namespace verificable.Controllers
         {
             if (TotalRightPercentage(adquirenteCandidates) == 100)
             {
-                multipropietariosToAdd = TotalTransferCase(formulario, enajenanteCandidates, adquirenteCandidates);
+                multipropietariosToAdd = TotalTransferCase(formulario, enajenanteCandidates, adquirenteCandidates, ongoingMultipropietarios);
             }
 
             else if (oneEnajenanteAndAdquirente)
@@ -485,9 +485,9 @@ namespace verificable.Controllers
 
             return multipropietariosToAdd;
         }
-        private List<Multipropietario> TotalTransferCase(Formulario formulario, List<Enajenante> enajenanteCandidates, List<Adquirente> adquirenteCandidates)
+        public List<Multipropietario> TotalTransferCase(Formulario formulario, List<Enajenante> enajenanteCandidates, List<Adquirente> adquirenteCandidates, List<Multipropietario> multipropietarios)
         {
-            List<Multipropietario> multipropietariosToCompare = GetOngoingMultipropietarios(formulario.Comuna, formulario.Manzana, formulario.Predio);
+            List<Multipropietario> multipropietariosToCompare = multipropietarios;
             List<Multipropietario> multipropietariosToDiscontinue = new List<Multipropietario>();
             List<Multipropietario> potentialMultipropietarios = new List<Multipropietario>();
             double? potentialTotalPercentage = 0;
@@ -566,7 +566,7 @@ namespace verificable.Controllers
 
             return potentialMultipropietarios;
         }
-        private double? TotalRightPercentage(List<Adquirente> compraventaAdquirientes)
+        public double? TotalRightPercentage(List<Adquirente> compraventaAdquirientes)
         {
             double? percentageCount = 0;
             foreach (var adquiriente in compraventaAdquirientes)
@@ -577,7 +577,7 @@ namespace verificable.Controllers
         }
 
 
-        private List<Multipropietario> OneAdquirenteAndEnajenanteCase(List<Adquirente> adquirenteCandidates, List<Enajenante> enajenanteCandidates, List<Multipropietario> multipropietarios, Formulario formulario)
+        public List<Multipropietario> OneAdquirenteAndEnajenanteCase(List<Adquirente> adquirenteCandidates, List<Enajenante> enajenanteCandidates, List<Multipropietario> multipropietarios, Formulario formulario)
         {
             List<Multipropietario> potentialMultipropietarios = new List<Multipropietario>();
             Adquirente adquirente = adquirenteCandidates[0];
