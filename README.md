@@ -1,5 +1,6 @@
 # DSV
 
+## Must use capital "K" in the RUT, otherwise it will not let you submit the form
 
 #SQL QUERY
 ´´´

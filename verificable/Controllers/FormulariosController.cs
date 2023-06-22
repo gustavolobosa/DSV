@@ -81,6 +81,8 @@ namespace verificable.Controllers
         {
             List<Adquirente> adquirenteCandidates = new List<Adquirente>();
             List<Enajenante> enajenanteCandidates = new List<Enajenante>();
+
+            Console.WriteLine("json: {0}" + Request.Form.Keys);
             
             if (ModelState.IsValid)
             {
@@ -235,7 +237,6 @@ namespace verificable.Controllers
 
                 // Cambiar el estado a "Eliminado"
                 formulario.Estado = "Eliminado";
-                
             }
             
             await _context.SaveChangesAsync();
