@@ -82,7 +82,6 @@ namespace verificable.Controllers
             List<Adquirente> adquirenteCandidates = new List<Adquirente>();
             List<Enajenante> enajenanteCandidates = new List<Enajenante>();
 
-            Console.WriteLine("json: {0}" + Request.Form.Keys);
             
             if (ModelState.IsValid)
             {
@@ -117,13 +116,31 @@ namespace verificable.Controllers
                         numAdquirentes++;
                     }
                 }
+
+                ///meter en funcion
+                var dataFormHTML = new Dictionary<string, string>();
+
+                foreach (string key in Request.Form.Keys)
+                {
+                    
+                    string valor = Request.Form[key];
+                    dataFormHTML.Add(key, valor);
+                    
+                }
+                
+                foreach (string k in dataFormHTML.Keys)
+                {
+                    Console.WriteLine(k + ": " + dataFormHTML[k]);
+                }
+                /////meter en funcion
+
                 if (formulario.Cne == regularizacionDePatrimonio)
                 {
                     RegularizacionDePatrimonioCase(formulario, numAdquirentes, numEnajenantes);
                 }
                 else if (formulario.Cne == compraventa) 
                 {
-                    CompraventaCase(formulario, numAdquirentes, numEnajenantes, adquirenteCandidates, enajenanteCandidates);
+                    CompraventaCase(formulario, numAdquirentes, numEnajenantes, adquirenteCandidates, enajenanteCandidates, dataFormHTML);
                 }
 
                 
@@ -249,6 +266,7 @@ namespace verificable.Controllers
         {
           return (_context.Formularios?.Any(e => e.NumAtencion == id)).GetValueOrDefault();
         }
+        
         public bool ComunaExists(string nombre)
         {
             return _context.Comunas.Any(e => e.Nombre == nombre);
@@ -275,7 +293,6 @@ namespace verificable.Controllers
                 _context.SaveChanges();
             }
         }
-
 
         public void RegularizacionDePatrimonioCase(Formulario formulario, int numAdquirentes, int numEnajenantes)
         {
@@ -344,7 +361,7 @@ namespace verificable.Controllers
             }
         }
 
-        public void CompraventaCase(Formulario formulario, int numAdquirentes, int numEnajenantes, List<Adquirente> adquirenteCandidates, List<Enajenante> enajenanteCandidates)
+        public void CompraventaCase(Formulario formulario, int numAdquirentes, int numEnajenantes, List<Adquirente> adquirenteCandidates, List<Enajenante> enajenanteCandidates, Dictionary <string, string> dataFormHTML)
         {
             //El siguente bloque es para ver a cuales adquirentes les falta un porcentaje y calcular la suma de pocentajes total.
             decimal? porcentajeDerechoAdq = 0;
@@ -389,7 +406,7 @@ namespace verificable.Controllers
             float percentagePerAdq = ((float)(100 - porcentajeDerechoAdq)) / adqWithoutPercentage.Count;
             float percentagePerEna = ((float)(100 - porcentajeDerechoEna)) / enaWithoutPercentage.Count;
 
-            enajenanteCandidates = GetEnajenanteCantidates(numEnajenantes, formulario, percentagePerEna);
+            enajenanteCandidates = GetEnajenanteCantidates(numEnajenantes, formulario, percentagePerEna, dataFormHTML);
             foreach (var enajenante in enajenanteCandidates)
             {
                 _context.Add(new Enajenante
@@ -406,7 +423,7 @@ namespace verificable.Controllers
                     fechaInscripcion = new DateTime(MIN_YEAR, MIN_MONTH, MIN_DAY);
                 }
             }
-            adquirenteCandidates = GetAdquirienteCantidates(numAdquirentes, formulario, percentagePerAdq);
+            adquirenteCandidates = GetAdquirienteCantidates(numAdquirentes, formulario, percentagePerAdq, dataFormHTML);
             foreach (var adquiriente in adquirenteCandidates)
             {
                 _context.Add(new Adquirente
@@ -424,7 +441,7 @@ namespace verificable.Controllers
                 }
             }
 
-            List<Multipropietario> ongoingMultipropietarios = GetOngoingMultipropietarios(formulario.Comuna, formulario.Manzana, formulario.Predio);
+            List<Multipropietario> ongoingMultipropietarios = GetOngoingMultipropietarios(formulario.Comuna, formulario.Manzana, formulario.Predio, 0);
 
 
             bool oneEnajenanteAndAdquirente = enajenanteCandidates.Count == 1 && adquirenteCandidates.Count == 1;
@@ -486,6 +503,7 @@ namespace verificable.Controllers
 
             return multipropietariosToAdd;
         }
+        
         public List<Multipropietario> TotalTransferCase(Formulario formulario, List<Enajenante> enajenanteCandidates, List<Adquirente> adquirenteCandidates, List<Multipropietario> multipropietarios)
         {
             List<Multipropietario> multipropietariosToCompare = multipropietarios;
@@ -567,6 +585,7 @@ namespace verificable.Controllers
 
             return potentialMultipropietarios;
         }
+        
         public double? TotalRightPercentage(List<Adquirente> compraventaAdquirientes)
         {
             double? percentageCount = 0;
@@ -576,7 +595,6 @@ namespace verificable.Controllers
             }
             return percentageCount;
         }
-
 
         public List<Multipropietario> OneAdquirenteAndEnajenanteCase(List<Adquirente> adquirenteCandidates, List<Enajenante> enajenanteCandidates, List<Multipropietario> multipropietarios, Formulario formulario)
         {
@@ -680,9 +698,9 @@ namespace verificable.Controllers
             return potentialMultipropietarios;
         }
 
-        private List<Multipropietario> DominioCase(Formulario formulario, List<Enajenante> enajenanteCandidates, List<Adquirente> adquirenteCandidates)
+        public List<Multipropietario> DominioCase(Formulario formulario, List<Enajenante> enajenanteCandidates, List<Adquirente> adquirenteCandidates)
         {
-            List<Multipropietario> multipropietariosToCompare = GetOngoingMultipropietarios(formulario.Comuna, formulario.Manzana, formulario.Predio);
+            List<Multipropietario> multipropietariosToCompare = GetOngoingMultipropietarios(formulario.Comuna, formulario.Manzana, formulario.Predio, 0);
             List<Multipropietario> potentialMultipropietarios = new List<Multipropietario>();
             bool foundEnajenante = false;
             foreach (var multipropietario in multipropietariosToCompare)
@@ -806,11 +824,15 @@ namespace verificable.Controllers
                 }
             }
 
+            foreach (var multipropietario in potentialMultipropietarios)
+            {
+                Console.WriteLine("rut: {0}"+ multipropietario.RunRut + " porcentaje: {0}" + multipropietario.PorcentajeDerecho);
+            }
 
             return potentialMultipropietarios;
         }
 
-        private List<Multipropietario> MergeSameMultipropietariosPercentage(List<Multipropietario> multipropietariosToAdd)
+        public List<Multipropietario> MergeSameMultipropietariosPercentage(List<Multipropietario> multipropietariosToAdd)
         {
             Dictionary<string, double> mergedPercentages = new Dictionary<string, double>();
             Dictionary<string, int> repetedRuts = new Dictionary<string, int>();  
@@ -858,35 +880,51 @@ namespace verificable.Controllers
             return multipropietariosToAdd;
         }
 
-        public List<Multipropietario> GetOngoingMultipropietarios(string comuna, string manzana, string predio)
+        public List<Multipropietario> GetOngoingMultipropietarios(string comuna, string manzana, string predio, int get)
         {
             List<Multipropietario> ongoingMultipropietarios = new List<Multipropietario>();
-            foreach (var multipropietario in _context.Multipropietarios)
+
+            if (get == 1)
             {
-                bool targetIdentifier = multipropietario.Comuna == comuna && multipropietario.Manzana == manzana &&
-                                        multipropietario.Predio == predio;
-                if (multipropietario.VigenciaFinal == null && targetIdentifier)
+                foreach (var multipropietario in _context.Multipropietarios)
                 {
-                    ongoingMultipropietarios.Add(multipropietario);
+                    bool targetIdentifier = multipropietario.Comuna == comuna && multipropietario.Manzana == manzana &&
+                                            multipropietario.Predio == predio;
+                    if (multipropietario.VigenciaFinal == null && targetIdentifier)
+                    {
+                        ongoingMultipropietarios.Add(multipropietario);
+                    }
+
                 }
-                
             }
             return ongoingMultipropietarios;
         }
 
-        public List<Enajenante> GetEnajenanteCantidates(int numEnajenantes, Formulario formulario, float percentagePerEna)
+        public List<Enajenante> GetEnajenanteCantidates(int numEnajenantes, Formulario formulario, float percentagePerEna, Dictionary <string, string> dataFormHTML)
         {
             List<Enajenante> enajenanteCandidates = new List<Enajenante>();
             for (var num = 0; num < numEnajenantes;  num++)
             {
-                string runRut = Request.Form["enajenantes[" + num + "].run_rut"];
+                string runRut = dataFormHTML["enajenantes[" + num + "].run_rut"];
                 decimal? porcentajeDerecho = null;
-                if (!string.IsNullOrEmpty(Request.Form["enajenantes[" + num + "].porcentaje_derecho"]))
+                if (!string.IsNullOrEmpty(dataFormHTML["enajenantes[" + num + "].porcentaje_derecho"]))
                 {
-                    porcentajeDerecho = decimal.Parse(Request.Form["enajenantes[" + num + "].porcentaje_derecho"]);
+                    porcentajeDerecho = decimal.Parse(dataFormHTML["enajenantes[" + num + "].porcentaje_derecho"]);
                 }
                 bool noAcreditado = false;
-                string checkboxValue = Request.Form["enajenantes[" + num + "].no_acreditado"].ToString().ToLower();
+
+                string checkboxKey = "enajenantes[" + num + "].no_acreditado";
+                string checkboxValue;
+
+                if (dataFormHTML.ContainsKey(checkboxKey))
+                {
+                    checkboxValue = dataFormHTML[checkboxKey].ToString().ToLower();
+                }
+                else
+                {
+                    checkboxValue = "off";
+                }
+
                 if (checkboxValue == "on" || checkboxValue == "true")
                 {
                     noAcreditado = true;
@@ -903,19 +941,31 @@ namespace verificable.Controllers
             return enajenanteCandidates;
         }
 
-        public List<Adquirente> GetAdquirienteCantidates(int numAdquirientes, Formulario formulario, float percentagePerAdq)
+        public List<Adquirente> GetAdquirienteCantidates(int numAdquirientes, Formulario formulario, float percentagePerAdq, Dictionary<string, string> dataFormHTML)
         {
             List<Adquirente> adquirienteCandidates = new List<Adquirente>();
             for (var num = 0; num < numAdquirientes; num++)
             {
-                string runRut = Request.Form["adquirentes[" + num + "].run_rut"];
+                string runRut = dataFormHTML["adquirentes[" + num + "].run_rut"];
                 decimal? porcentajeDerecho = null;
-                if (!string.IsNullOrEmpty(Request.Form["adquirentes[" + num + "].porcentaje_derecho"]))
+                if (!string.IsNullOrEmpty(dataFormHTML["adquirentes[" + num + "].porcentaje_derecho"]))
                 {
-                    porcentajeDerecho = decimal.Parse(Request.Form["adquirentes[" + num + "].porcentaje_derecho"]);
+                    porcentajeDerecho = decimal.Parse(dataFormHTML["adquirentes[" + num + "].porcentaje_derecho"]);
                 }
                 bool noAcreditado = false;
-                string checkboxValue = Request.Form["adquirentes[" + num + "].no_acreditado"].ToString().ToLower();
+
+                string checkboxKey = "adquirentes[" + num + "].no_acreditado";
+                string checkboxValue;
+
+                if (dataFormHTML.ContainsKey(checkboxKey))
+                {
+                    checkboxValue = dataFormHTML[checkboxKey].ToString().ToLower();
+                }
+                else
+                {
+                    checkboxValue = "off";
+                }
+
                 if (checkboxValue == "on" || checkboxValue == "true")
                 {
                     noAcreditado = true;
